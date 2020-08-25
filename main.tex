@@ -38,6 +38,8 @@
 \newacronym{lidar}{LiDAR}{light detection and ranging}
 \newacronym{ml}{ML}{machine learning}
 \newacronym{dl}{DL}{deep learning}
+\newacronym{pcd}{PCD}{point cloud data}
+\newacronym{gis}{GIS}{geographic information system}
 
 %=================================================================
 %% Please use the following mathematics environments: Theorem, Lemma, Corollary, Proposition, Characterization, Property, Problem, Example, ExamplesandDefinitions, Hypothesis, Remark, Definition, Notation, Assumption
@@ -96,6 +98,8 @@ Para3: SfM background, \textbf{algorithm}, and software (computation intensive d
 
 Para4: Data processing (the difficulties to of use the result of SfM, e.g. 1) low quality of DOM make canopy cover, organ detection. -> link to raw image; 2) 3D analysis not easy (require large RAM and good computation to processing point cloud, and the quality of point cloud couldn't too large -> 3D to 2d, 3D clipping, there is no common tool to make this transfer easy)
 
+%Pix4D OpenSFM, FieldReconst (http://cse.naro.affrc.go.jp/rsugiura/FieldReconst/) introduction
+
 Para5: 4D time series analysis demand and point cloud clipping
 
 Para6: Training Data crisis
@@ -105,33 +109,64 @@ Para7: Objectives
 \section{Methods and Materials}
 
 \subsection{Experimental design}
-Experimental design about Lotus (Figure  \ref{fig:plotid}), (in order to test this package, the following data were collected, and SfM products were produced by the following configs, using Pix4D as an exmaple)
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/plot_with_id.pdf}
-\caption{Lotus plot id. localtion: Tokyo, Japan, DOM, 2017.05/09 made by QGIS, including this figure and label shapefile (shp), This need to be modified later}
-\label{fig:plotid}
-\end{figure}
+%Experimental design about Lotus (Figure \ref{fig:plotid}), (in order to test this package, the following data were collected, and SfM products were produced by the following configs, using Pix4D as an example)
+This study proposed a method and implement a python package to cropping \acrshort*{sfm} software (e.g. Pix4D Mapper) produced products based on \acrfull*{roi} and linking them on original images. The functions can be clustered into three main classes: 1) "2.5D to 2D": For those predefined ground plots, the DOM and \acrfull*{GIS} software were used to produce 2D \acrshort*{roi} polygon shapefile (*.shp), and the DSM was used to obtain the height (Z axis) values in order to get the 3D coordinates of \acrshort*{roi}. Then the reverse calculation was applied to calcuate the 2D pixel coordinates of this \acrshort*{roi} on given original images based on the joint rotation-translation matrix (also called camera matrix or pmatrix) produced by \acrshort*{sfm} software. 2) "3D to 2D": For both predefined and non-predefined ground plots, the \acrfull*{pcd} and point cloud analyzing software (e.g. CloudCompare) were used to obtain 3D \acrshort*{roi} directly, and the same reverse calculation as previous class was applied afterwards. 3) "2D to 2D": For those predefined plots, the image analyzing software (e.g. Photoshop, GIMP, etc.) was used to mark 2D pixel coordinates of \acrshort*{roi} on one original images, and calculate the 2D pixel coordinates of this \acrshort*{roi} on other original images. The details of this method, algorithms and testing experimental plots were given below.
 
 \subsection{Data collection}
-\subsubsection{Instruments}
 
-\subsubsection{\acrshort*{sfm} configuration}
-It is quite important to ensure the quality of input data is analysiable. This part introduce the method about how to prepare raw images and \acrshort*{sfm} outputs. 
+
+\begin{table}[H]
+  \caption{Trail field and image collection information}
+  \centering
+  %% \tablesize{} %% You can specify the fontsize here, e.g., \tablesize{\footnotesize}. If commented out \small will be used.
+  \begin{tabular}{cccccc}
+    \toprule
+    \textbf{Flight date}	& \textbf{No. of raw images}	& \textbf{Size of raw images} & \textbf{Size of DOM} & \textbf{Size of DSM} & \textbf{Size of PCD} \\ 
+    (yyyymmdd)&     & (GB) & (MB) & (MB) & (MB) \\
+    \midrule
+    20170525  & 266	& 1.64 & 38.5 & 34.6 & 89.2 \\
+    20170531	& 151 & 0.94 & 40.4 & 37.6 & 60.0 \\
+    20170603	& 141 & 0.87 & 46.5 & 34.1 & 60.3 \\
+    20170612	& 285 & 1.74 & 38.1 & 32.9 & 93.8 \\
+    20170616	& 136 & 0.84 & 39.1 & 33.4 & 60.1 \\
+    20170703	& 138 & 0.88 & 36.3 & 33.2 & 58.5 \\
+    20170707	& 132 & 0.82 & 40.7 & 32.4 & 57.1 \\
+    20170711	& 138 & 0.86 & 41.8 & 33.4 & 57.8 \\
+    20170718	& 135 & 0.84 & 38.5 & 35.4 & 56.9 \\
+    20170724	& 142 & 0.90 & 34.5 & 32.9 & 59.2 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/plot_with_id.pdf}
+  \caption{Lotus plot id. location: Tokyo, Japan, DOM, 2017.05/09 made by QGIS, including this figure and label shapefile (shp), This need to be modified later}
+  \label{fig:plotid}
+\end{figure}
+
+It is quite important to ensure the quality of input data is analyzable. This part introduce the method about how to prepare raw images and \acrshort*{sfm} outputs. 
 
 Ground control points, flight speed etc.
 
-\subsection{Implementation}
+\subsection{Algorithms and Implementation}
 The definition of each camera external parameters and 2D \& 3D coordinates
 
-\subsubsection{Software workflow}
-Show the workflow chart 
+\subsubsection{2.5D to 2D}
+
+\subsubsection{3D to 2D}
+
+\subsubsection{2D to 2D}
+
+\subsubsection{Package implementation}
+%Show the workflow chart 
 
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
-\caption{Workflow of software. This need to be modified later}
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
+  \caption{Workflow of software. This need to be modified and updated with latest ppt later}
+  \label{fig:workflow}
 \end{figure}
 
 %\begin{figure}[H]
@@ -140,28 +175,25 @@ Show the workflow chart
 %\caption{The coordinates used. This need to be modified later, add 3D into it}
 %\end{figure}
 
-\subsubsection{Conversion algorithms}
-1) from 2D Photo pixel coordinate to 2D Geo coordinate (DOM DSM, via GeoTiff header info)
-
-2) 2D Geo coordinate to 3D Geo coordinate (Point clouds) via DSM (know xy, search z from DSM)
-
-3) 3D Geo coordinate projects to 2D pixel coordinate via camera parameters from SfM output
-
-4) [Future work] 2D photo pixel to 3D Geo coordinate without GIS information, using Shi Yun's algorithm, (not sure mention in this part or future work part)
-
 %\subsection{Software dependency}
 Python packages, platforms (Windows for exe)
 
-Pix4D OpenSFM, FieldReconst (http://cse.naro.affrc.go.jp/rsugiura/FieldReconst/) introduction
-
-%\subsection{Hardware dependency}
-"\textit{For reliable performance of the system, server specifications of 8 GB of RAM and a multicore CPU with at least 3 GHz are recommended. The web-application can be accessed by any connected smart device capable of
+\textit{For reliable performance of the system, server specifications of 8 GB of RAM and a multicore CPU with at least 3 GHz are recommended. The web-application can be accessed by any connected smart device capable of
 running standard web-browsers.}" (copied from another software paper, need modification)
 
-\subsubsection{Software operations}
+%\subsubsection{Software operations}
 Python command and classes to do previous workflow
 
 Also introduce GUI interface (CMD line) if we have.
+
+\subsection{Accuracy assessment and evaluation}
+%IoU calculation and \cite{tresch_easy_2019}
+\subsubsection{Intersection of union (IoU)}
+
+\subsubsection{Time-series traits evaluation}
+% calculation of coverage
+
+% calculation of height
 
 \section{Results}
 
