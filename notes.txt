@@ -1,0 +1,7 @@
+Guideline for author:
+
+## total guideline
+https://plantmethods.biomedcentral.com/submission-guidelines/preparing-your-manuscript#preparing+main+manuscript+text
+
+## Software guideline
+https://plantmethods.biomedcentral.com/submission-guidelines/preparing-your-manuscript/software
