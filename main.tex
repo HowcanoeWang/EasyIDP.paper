@@ -40,6 +40,7 @@
 \newacronym{dl}{DL}{deep learning}
 \newacronym{pcd}{PCD}{point cloud data}
 \newacronym{gis}{GIS}{geographic information system}
+\newacronym{gcp}{GCPs}{ground control points}
 
 %=================================================================
 %% Please use the following mathematics environments: Theorem, Lemma, Corollary, Proposition, Characterization, Property, Problem, Example, ExamplesandDefinitions, Hypothesis, Remark, Definition, Notation, Assumption
@@ -110,10 +111,20 @@ Para7: Objectives
 
 \subsection{Experimental design}
 %Experimental design about Lotus (Figure \ref{fig:plotid}), (in order to test this package, the following data were collected, and SfM products were produced by the following configs, using Pix4D as an example)
-This study proposed a method and implement a python package to cropping \acrshort*{sfm} software (e.g. Pix4D Mapper) produced products based on \acrfull*{roi} and linking them on original images. The functions can be clustered into three main classes: 1) "2.5D to 2D": For those predefined ground plots, the DOM and \acrfull*{gis} software were used to produce 2D \acrshort*{roi} polygon shapefile (*.shp), and the DSM was used to obtain the height (Z axis) values in order to get the 3D coordinates of \acrshort*{roi}. Then the reverse calculation was applied to calcuate the 2D pixel coordinates of this \acrshort*{roi} on given original images based on the joint rotation-translation matrix (also called camera matrix or pmatrix) produced by \acrshort*{sfm} software. 2) "3D to 2D": For both predefined and non-predefined ground plots, the \acrfull*{pcd} and point cloud analyzing software (e.g. CloudCompare) were used to obtain 3D \acrshort*{roi} directly, and the same reverse calculation as previous class was applied afterwards. 3) "2D to 2D": For those predefined plots, the image analyzing software (e.g. Photoshop, GIMP, etc.) was used to mark 2D pixel coordinates of \acrshort*{roi} on one original images, and calculate the 2D pixel coordinates of this \acrshort*{roi} on other original images. The details of this method, algorithms and testing experimental plots were given below.
+This study proposed a method and implement a python package to cropping \acrshort*{sfm} software (e.g. Pix4D Mapper) produced products based on \acrfull*{roi} and linking them on original images. The functions can be clustered into three main classes: 1) "2.5D to 2D": For those predefined ground plots, the DOM and \acrfull*{gis} software were used to produce 2D \acrshort*{roi} polygon shapefile (*.shp), and the DSM was used to obtain the height (Z axis) values in order to get the 3D coordinates of \acrshort*{roi}. Then the reverse calculation was applied to calculate the 2D pixel coordinates of this \acrshort*{roi} on given original images based on the joint rotation-translation matrix (also called camera matrix or pmatrix) produced by \acrshort*{sfm} software. 2) "3D to 2D": For both predefined and non-predefined ground plots, the \acrfull*{pcd} and point cloud analyzing software (e.g. CloudCompare) were used to obtain 3D \acrshort*{roi} directly, and the same reverse calculation as previous class was applied afterwards. 3) "2D to 2D": For those predefined plots, the image analyzing software (e.g. Photoshop, GIMP, etc.) was used to mark 2D pixel coordinates of \acrshort*{roi} on one original images, and calculate the 2D pixel coordinates of this \acrshort*{roi} on other original images. The details of this method, algorithms and testing experimental plots were given below.
 
 \subsection{Data collection}
 
+The case study used the lotus (\textif{Nelumbo nucifera}) plot in Nishi-Tokyo, Tokyo, Japan. The total 112 different varieties of lotus were sown in squire cultivation ponds on the early May, 2017 (Figure \ref{fig:plotid}). The ordinary local management practices were used to managed all trails.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/plot_with_id.pdf}
+  \caption{Lotus plot id. location: Tokyo, Japan, DOM, 2017.05/09 made by QGIS, including this figure and label shapefile (shp), This need to be modified later}
+  \label{fig:plotid}
+\end{figure}
+
+The DJI drone (VC Technology, UK) was used to acquire images, the flight height is ??? m and the flight speed is ??? m/s. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used default, including lens distortion correction (default FC550_DJI model), automatic feature tie-points matching, manual \acrfull*{gcp} marking via ??? GPS device, building densified point clouds, and exporting both \acrshort*{dom} and \acrshort*{dsm}. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}.
 
 \begin{table}[H]
   \caption{Trail field and image collection information}
@@ -136,19 +147,8 @@ This study proposed a method and implement a python package to cropping \acrshor
     20170724	& 142 & 0.90 & 34.5 & 32.9 & 59.2 \\
     \bottomrule
   \end{tabular}
+  \label{tab:diginfo}
 \end{table}
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/plot_with_id.pdf}
-  \caption{Lotus plot id. location: Tokyo, Japan, DOM, 2017.05/09 made by QGIS, including this figure and label shapefile (shp), This need to be modified later}
-  \label{fig:plotid}
-\end{figure}
-
-It is quite important to ensure the quality of input data is analyzable. This part introduce the method about how to prepare raw images and \acrshort*{sfm} outputs. 
-
-Ground control points, flight speed etc.
 
 \subsection{Algorithms and Implementation}
 The definition of each camera external parameters and 2D \& 3D coordinates
