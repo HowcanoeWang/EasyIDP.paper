@@ -113,16 +113,16 @@ This study proposed a method and implement a python package to cropping \acrshor
 
 \subsection{Field experiment and image collection}
 
-To obtaining the materials for package developing and testing, a lotus (\textit{Nelumbo nucifera}) experimental plot in Nishi-Tokyo, Tokyo, Japan was used as a case study (Figure \ref{fig:map}.a). The total 112 different varieties of lotus were sown in squire cultivation ponds on the ???, 2017 (Figure \ref{fig:map}.b). The ordinary local management practices were used to managed all trails.
+To obtain the materials for package developing and testing, a lotus (\textit{Nelumbo nucifera}) experimental plot in Nishi-Tokyo, Tokyo, Japan was used as a case study (Figure \ref{fig:map}.a). The total 112 different varieties of lotus were sown in squire cultivation ponds on the ???, 2017 (Figure \ref{fig:map}.b). The ordinary local management practices were used to managed all trails.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=2 cm]{figures/map.pdf}
-  \caption{The experimental lotus plot condition. a) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; b) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (\*.shp) for later usage; c) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
+  \includegraphics[width=0.95\linewidth]{figures/map.pdf}
+  \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (\*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
   \label{fig:map}
 \end{figure}
 
-The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight height is 30 m and the flight speed is ??? m/s. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used default, including lens distortion correction (default FC550\_DJI model), automatic feature tie-points matching, manual \acrfull*{gcp} marking via ??? GPS device (Figure \ref{fig:map}.c), building densified point clouds, and exporting both \acrshort*{dom} and \acrshort*{dsm}. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}. The device for 3D reconstruction processing includes Intel(R) Xeon(R) CPUE5-2690 v4 @2.60GHz CPU; 128GB RAM; two NVIDIAGeForceGTX1080 Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit Operating System.
+The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight height is 30 m and the flight speed is ??? m/s. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used default, including lens distortion correction (default FC550\_DJI model), automatic feature tie-points matching, manual \acrfull*{gcp} marking via ??? GPS device (Figure \ref{fig:map}.c), building densified point clouds, and exporting both \acrshort*{dom} and \acrshort*{dsm}. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}. The device for 3D reconstruction processing includes Intel(R) Xeon(R) CPUE5-2690 v4 @2.60GHz CPU; 128GB RAM; two NVIDIA GeForce GTX1080 Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system.
 
 \begin{table}[H]
   \caption{Trail field and image collection information}
@@ -164,7 +164,7 @@ The functions can be clustered into three main classes: 1) "2.5D to 2D": For tho
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=2 cm]{figures/workflow.pdf}
+  \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
   \caption{Workflow of software. This need to be modified and updated with latest ppt later}
   \label{fig:workflow}
 \end{figure}
