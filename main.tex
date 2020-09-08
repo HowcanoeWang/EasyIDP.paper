@@ -32,7 +32,7 @@
  
 \makenoidxglossaries
 \newacronym{roi}{ROI}{region of interest}
-\newacronym{sfm}{SfM-MVS}{Structure-from-Motion Multi-View Stereo photogrammetry}
+\newacronym{sfm}{SfM-MVS}{structure-from-motion multi-view stereo photogrammetry}
 \newacronym{dom}{DOM}{digital orthophoto map}
 \newacronym{dsm}{DSM}{digital surface model}
 \newacronym{lidar}{LiDAR}{light detection and ranging}
@@ -41,6 +41,8 @@
 \newacronym{pcd}{PCD}{point cloud data}
 \newacronym{gis}{GIS}{geographic information system}
 \newacronym{gcp}{GCPs}{ground control points}
+\newacronym{mtp}{MTPs}{manual tie points}
+\newacronym{mkl}{MKL}{math kernel library}
 
 %=================================================================
 %% Please use the following mathematics environments: Theorem, Lemma, Corollary, Proposition, Characterization, Property, Problem, Example, ExamplesandDefinitions, Hypothesis, Remark, Definition, Notation, Assumption
@@ -122,7 +124,7 @@ To obtain the materials for package developing and testing, a lotus (\textit{Nel
   \label{fig:map}
 \end{figure}
 
-The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight height is 30 m and the flight speed is ??? m/s. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used default, including lens distortion correction (default FC550\_DJI model), automatic feature tie-points matching, manual \acrfull*{gcp} marking via ??? GPS device (Figure \ref{fig:map}.c), building densified point clouds, and exporting both \acrshort*{dom} and \acrshort*{dsm}. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}. The device for 3D reconstruction processing includes Intel(R) Xeon(R) CPUE5-2690 v4 @2.60GHz CPU; 128GB RAM; two NVIDIA GeForce GTX1080 Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system.
+The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight height is 30 m and the flight speed is ??? m/s. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used default, including lens distortion correction (default FC550\_DJI camera model), automatic feature tie-points matching, manual \acrfull*{gcp} marking via ??? GPS device (Figure \ref{fig:map}.c), building densified point clouds, and exporting both \acrshort*{dom} and \acrshort*{dsm}. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}. The device for 3D reconstruction processing includes Intel Xeon E5-2690 v4 @2.60GHz CPU; 128GB RAM; two NVIDIA GeForce GTX1080Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system.
 
 \begin{table}[H]
   \caption{Trail field and image collection information}
@@ -130,61 +132,51 @@ The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight h
   %% \tablesize{} %% You can specify the fontsize here, e.g., \tablesize{\footnotesize}. If commented out \small will be used.
   \begin{tabular}{cccccc}
     \toprule
-    \textbf{Flight date}	& \textbf{No. of raw images}	& \textbf{Size of raw images} & \textbf{Size of DOM} & \textbf{Size of DSM} & \textbf{Size of PCD} \\ 
-    (yyyymmdd)&     & (GB) & (MB) & (MB) & (MB) \\
+    \textbf{Flight date}	& \textbf{No. of raw images}	& \textbf{Size of raw images} & \textbf{Size of DOM} & \textbf{Size of DSM} & \textbf{Size of PCD}  & \textbf{Processing time} \\ 
+    (yyyymmdd)&     & (GB) & (MB) & (MB) & (MB) & (min)\\
     \midrule
-    20170525  & 266	& 1.64 & 38.5 & 34.6 & 89.2 \\
-    20170531	& 151 & 0.94 & 40.4 & 37.6 & 60.0 \\
-    20170603	& 141 & 0.87 & 46.5 & 34.1 & 60.3 \\
-    20170612	& 285 & 1.74 & 38.1 & 32.9 & 93.8 \\
-    20170616	& 136 & 0.84 & 39.1 & 33.4 & 60.1 \\
-    20170703	& 138 & 0.88 & 36.3 & 33.2 & 58.5 \\
-    20170707	& 132 & 0.82 & 40.7 & 32.4 & 57.1 \\
-    20170711	& 138 & 0.86 & 41.8 & 33.4 & 57.8 \\
-    20170718	& 135 & 0.84 & 38.5 & 35.4 & 56.9 \\
-    20170724	& 142 & 0.90 & 34.5 & 32.9 & 59.2 \\
+    20170525  & 266	& 1.64 & 38.5 & 34.6 & 89.2 & 39.7 \\
+    20170531	& 151 & 0.94 & 40.4 & 37.6 & 60.0 & 47.3 \\
+    20170603	& 141 & 0.87 & 46.5 & 34.1 & 60.3 & 18.8 \\
+    20170612	& 285 & 1.74 & 38.1 & 32.9 & 93.8 & 101.5\\
+    20170616	& 136 & 0.84 & 39.1 & 33.4 & 60.1 & 11.1 \\
+    20170703	& 138 & 0.88 & 36.3 & 33.2 & 58.5 & 11.0 \\
+    20170707	& 132 & 0.82 & 40.7 & 32.4 & 57.1 & 10.0 \\
+    20170711	& 138 & 0.86 & 41.8 & 33.4 & 57.8 & 14.4 \\
+    20170718	& 135 & 0.84 & 38.5 & 35.4 & 56.9 & 10.1 \\
+    20170724	& 142 & 0.90 & 34.5 & 32.9 & 59.2 & 10.3 \\
     \bottomrule
   \end{tabular}
   \label{tab:diginfo}
 \end{table}
 
-\subsection{Algorithms and Implementation}
-The definition of each camera external parameters and 2D \& 3D coordinates
+\subsection{Algorithms and implementation}
 
-The functions can be clustered into three main classes: 1) "2.5D to 2D": For those predefined ground plots, the DOM and \acrfull*{gis} software were used to produce 2D \acrshort*{roi} polygon shapefile (*.shp), and the DSM was used to obtain the height (Z axis) values in order to get the 3D coordinates of \acrshort*{roi}. Then the reverse calculation was applied to calculate the 2D pixel coordinates of this \acrshort*{roi} on given original images based on the joint rotation-translation matrix (also called camera matrix or pmatrix) produced by \acrshort*{sfm} software. 2) "3D to 2D": For both predefined and non-predefined ground plots, the \acrfull*{pcd} and point cloud analyzing software (e.g. CloudCompare) were used to obtain 3D \acrshort*{roi} directly, and the same reverse calculation as previous class was applied afterwards. 3) "2D to 2D": For those predefined plots, the image analyzing software (e.g. Photoshop, GIMP, etc.) was used to mark 2D pixel coordinates of \acrshort*{roi} on one original images, and calculate the 2D pixel coordinates of this \acrshort*{roi} on other original images. The details of this method, algorithms and testing experimental plots were given below.
-
-\subsubsection{2.5D to 2D}
-
-\subsubsection{3D to 2D}
-
-\subsubsection{2D to 2D}
-
-\subsubsection{Package implementation}
-%Show the workflow chart 
+The general workflow of this tool was shown in Figure \ref{fig:workflow}. There were three main parts of this workflow, including preparing 3D reconstruction outputs (Figure \ref{fig:workflow}.a), preparing corresponding \acrfull{roi} via other tools (Figure \ref{fig:workflow}.b), and EAsyRIC converting tools (Figure \ref{fig:workflow}.c). Each part had tight correspondence with 3D reconstruction workflow, and was split into (1) SfM stage, (2) MVS stage, and (3) GIS products stage respectively.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
-  \caption{Workflow of software. This need to be modified and updated with latest ppt later}
+  \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper workflow as example). This step can be separated into 3 parts: (1) the structure from motion part, build the sparse tie-point cloud, and also produce the geometry relationship among each raw images. The geometry relationship reflects in the output files, including distortion corrected images, internal and external camera parameters (int\\ext param), and camera matrix (pmatrix). (2) the  multi-view stereo photogrammetry part, it densify previous sparse tie-point cloud and make geographic corrections based on the optional ground define step via \acrfull{gcp} or \acrfull{mtp}. (3) For those defined ground plots, export \acrfull{dom} and \acrfull{dsm}. (\textbf{b}) The \acrfull{roi} maker pipeline. (1) for making 2D pixel coordinates on raw or undistort images, common photo processing software can be used, e.g. open-source GIMP or commercial Photoshop. (2) for making 3D coordinates in point cloud (or 3D geographic coordinates if ground defined), common 3D processing software can be used, e.g. CloudCompare or MeshLab. (3) for making 2D geographic polygon on DOM and DSM, common \arcfull{gis} processing software including QGIS (open source) or ArcMap (commercial) can be used to produce required shapefiles. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2), the IO module converted necessary files to python objects, $r_i$ represented camera rotation of image $i$, $p_i$, represented camera position of image $i$, $k_i$ represented 2D pixel coordinates on image $i$, $w$ was sensor width (mm), $f$ was sensor focal length and $l$ was sensor length (mm). (2) "3D to 2D" part, including converting ROI from point cloud data (PCD) to raw images (pcd2raw) and clipping PCD to smaller part according to ROI (pcd2part). (3) "2.5D to 2D part", converting ROI from geographic shapefile to raw images (dxm2raw, extract height from DSM and obtain 3D geographic coordinates of pcd2raw) and clipping DOM and DSM by ROI (dxm2part).}
   \label{fig:workflow}
 \end{figure}
 
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=0.95\linewidth]{figures/coordinates.pdf}
-%\caption{The coordinates used. This need to be modified later, add 3D into it}
-%\end{figure}
+\subsubsection{3D reconstruction}
+The definition of each camera external parameters and 2D \& 3D coordinates
 
-%\subsection{Software dependency}
-Python packages, platforms (Windows for exe)
+\subsubsection{Region of Interest making}
 
-\textit{For reliable performance of the system, server specifications of 8 GB of RAM and a multicore CPU with at least 3 GHz are recommended. The web-application can be accessed by any connected smart device capable of
-running standard web-browsers.}" (copied from another software paper, need modification)
+\subsubsection{2D to 2D}
+"2D to 2D": For those predefined ground plots, the image analyzing software (e.g. Photoshop, GIMP, etc.) was used to mark 2D pixel coordinates of \acrshort*{roi} on one original images, and calculate the 2D pixel coordinates of this \acrshort*{roi} on other original images.
 
-%\subsubsection{Software operations}
-Python command and classes to do previous workflow
+\subsubsection{3D to 2D}
+"3D to 2D": For both predefined and non-predefined ground plots, the \acrfull*{pcd} and point cloud analyzing software (e.g. CloudCompare) were used to obtain 3D \acrshort*{roi} directly, and the same reverse calculation as previous class was applied afterwards. The details of this method, algorithms and testing experimental plots were given below.
 
-Also introduce GUI interface (CMD line) if we have.
+\subsubsection{2.5D to 2D}
+"2.5D to 2D": For those predefined ground plots, the DOM and \acrfull*{gis} software were used to produce 2D \acrshort*{roi} polygon shapefile (*.shp), and the DSM was used to obtain the height (Z axis) values in order to get the 3D coordinates of \acrshort*{roi}. Then the reverse calculation was applied to calculate the 2D pixel coordinates of this \acrshort*{roi} on given original images based on the joint rotation-translation matrix (also called camera matrix or pmatrix) produced by \acrshort*{sfm} software.
+
+\subsubsection{Package implementation}
+A open-source python \cite{guido_python_2020} package called EasyRIC (easy reconstruction image converter) was developed to implement the ideas of this paper. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl} support. For the package performance reliability, the 8GB of RAM and CPU with at 3GHz are recommended. The requirements to use this packages requires: the Python version is 3.7 or higher, and site-packages, numpy >= 1.18.1, scikit-image >= 0.16.2, opencv-python >= 3.4.2.16, pyproj==2.6.1.post1, pyparsing>=2.0.1 are required, and following pure python packages were included in source code without installation: Pyshp, Send2Trash, ezdxf, and plyfile. The user manual and source code can be accessed via: https://github.com/HowcanoeWang/EasyRIC and the License is GPL-3.0 which is free to use for any purpose, forever.
 
 \subsection{Accuracy assessment and evaluation}
 %IoU calculation and \cite{tresch_easy_2019}
@@ -219,7 +211,7 @@ API for most \acrshort*{sfm} software packages
 
 2D Photo to 2D photo without SfM products
 
-Link between Aerial and Terristrial photos.
+Link between Aerial and Terrestrial photos.
 
 \section{Conclusions}
 Text
