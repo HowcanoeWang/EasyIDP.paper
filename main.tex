@@ -23,8 +23,6 @@
 
 %=================================================================
 % Add packages and commands here. The following packages are loaded in our class file: fontenc, calc, indentfirst, fancyhdr, graphicx, lastpage, ifthen, lineno, float, amsmath, setspace, enumitem, mathpazo, booktabs, titlesec, etoolbox, amsthm, hyphenat, natbib, hyperref, footmisc, geometry, caption, url, mdframed, tabto, soul, multirow, microtype, tikz
-\usepackage{biblatex}
-\addbibresource{myzotero.bib}
 \usepackage[acronym, nogroupskip, nonumberlist]{glossaries}
 
 \setglossarystyle{long}
@@ -191,7 +189,7 @@ The general workflow of this tool was shown in Figure \ref{fig:workflow}. There 
 "2.5D to 2D": For those predefined ground plots, the DOM and \acrfull*{gis} software were used to produce 2D \acrshort*{roi} polygon shapefile (*.shp), and the DSM was used to obtain the height (Z axis) values in order to get the 3D coordinates of \acrshort*{roi}. Then the reverse calculation was applied to calculate the 2D pixel coordinates of this \acrshort*{roi} on given original images based on the joint rotation-translation matrix (also called camera matrix or pmatrix) produced by \acrshort*{sfm} software.
 
 \subsubsection{Package implementation}
-A open-source python \cite{guido_python_2018} package called EasyRIC (easy reconstruction image converter) was developed to implement the ideas of this paper. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl} support. For the package performance reliability, the 8GB of RAM and CPU with at 3GHz are recommended. The requirements to use this packages requires: the Python version is 3.7 or higher, and site-packages, numpy >= 1.18.1, scikit-image >= 0.16.2, opencv-python >= 3.4.2.16, pyproj==2.6.1.post1, pyparsing>=2.0.1 are required, and following pure python packages were included in source code without installation: Pyshp, Send2Trash, ezdxf, and plyfile. The user manual and source code can be accessed via: https://github.com/HowcanoeWang/EasyRIC and the License is GPL-3.0 which is free to use for any purpose, forever.
+A open-source python \cite{guido_python_2020} package called EasyRIC (easy reconstruction image converter) was developed to implement the ideas of this paper. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl} support. For the package performance reliability, the 8GB of RAM and CPU with at 3GHz are recommended. The requirements to use this packages requires: the Python version is 3.7 or higher, and site-packages, numpy >= 1.18.1, scikit-image >= 0.16.2, opencv-python >= 3.4.2.16, pyproj==2.6.1.post1, pyparsing>=2.0.1 are required, and following pure python packages were included in source code without installation: Pyshp, Send2Trash, ezdxf, and plyfile. The user manual and source code can be accessed via: https://github.com/HowcanoeWang/EasyRIC and the License is GPL-3.0 which is free to use for any purpose, forever.
 
 \subsection{Accuracy assessment and evaluation}
 %IoU calculation and \cite{tresch_easy_2019}
@@ -216,7 +214,7 @@ Find \acrshort*{roi} in \acrshort*{sfm} products on the raw images
 text \cite{ma_calculation_2019, guo_illumination_2013}
 should including from DOM(DSM) coordinates (GIS or pixel) and point clouds (3D) coordinates to raw images.
 
-\subsection{Use case 3: Efficient annotation of training data for \acrshort*{ml}/\acrshort*{dl}}
+\subsection{Use case 3: Efficient annotation of training data for ML/DL}
 3D/2.5D small region -> 2D->Raw small region, selecting strategy for efficient annotation of training data for ML/DL.
 
 \section{Discussion}
