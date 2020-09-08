@@ -130,7 +130,8 @@ The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight h
   \caption{Trail field and image collection information}
   \centering
   %% \tablesize{} %% You can specify the fontsize here, e.g., \tablesize{\footnotesize}. If commented out \small will be used.
-  \begin{tabular}{cccccc}
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{ccccccc}
     \toprule
     \textbf{Flight date}	& \textbf{No. of raw images}	& \textbf{Size of raw images} & \textbf{Size of DOM} & \textbf{Size of DSM} & \textbf{Size of PCD}  & \textbf{Processing time} \\ 
     (yyyymmdd)&     & (GB) & (MB) & (MB) & (MB) & (min)\\
@@ -147,24 +148,26 @@ The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight h
     20170724	& 142 & 0.90 & 34.5 & 32.9 & 59.2 & 10.3 \\
     \bottomrule
   \end{tabular}
+  }
   \label{tab:diginfo}
 \end{table}
 
 \subsection{Algorithms and implementation}
 
-The general workflow of this tool was shown in Figure \ref{fig:workflow}. There were three main parts of this workflow, including preparing 3D reconstruction outputs (Figure \ref{fig:workflow}.a), preparing corresponding \acrfull{roi} via other tools (Figure \ref{fig:workflow}.b), and EAsyRIC converting tools (Figure \ref{fig:workflow}.c). Each part had tight correspondence with 3D reconstruction workflow, and was split into (1) SfM stage, (2) MVS stage, and (3) GIS products stage respectively.
+The general workflow of this tool was shown in Figure \ref{fig:workflow}. There were three main parts of this workflow, including preparing 3D reconstruction outputs (Figure \ref{fig:workflow}.a), preparing corresponding \acrfull*{roi} via other tools (Figure \ref{fig:workflow}.b), and EAsyRIC converting tools (Figure \ref{fig:workflow}.c). Each part had tight correspondence with 3D reconstruction workflow, and was split into (1) SfM stage, (2) MVS stage, and (3) GIS products stage respectively.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
-  \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper workflow as example). This step can be separated into 3 parts: (1) the structure from motion part, build the sparse tie-point cloud, and also produce the geometry relationship among each raw images. The geometry relationship reflects in the output files, including distortion corrected images, internal and external camera parameters (int\\ext param), and camera matrix (pmatrix). (2) the  multi-view stereo photogrammetry part, it densify previous sparse tie-point cloud and make geographic corrections based on the optional ground define step via \acrfull{gcp} or \acrfull{mtp}. (3) For those defined ground plots, export \acrfull{dom} and \acrfull{dsm}. (\textbf{b}) The \acrfull{roi} maker pipeline. (1) for making 2D pixel coordinates on raw or undistort images, common photo processing software can be used, e.g. open-source GIMP or commercial Photoshop. (2) for making 3D coordinates in point cloud (or 3D geographic coordinates if ground defined), common 3D processing software can be used, e.g. CloudCompare or MeshLab. (3) for making 2D geographic polygon on DOM and DSM, common \arcfull{gis} processing software including QGIS (open source) or ArcMap (commercial) can be used to produce required shapefiles. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2), the IO module converted necessary files to python objects, $r_i$ represented camera rotation of image $i$, $p_i$, represented camera position of image $i$, $k_i$ represented 2D pixel coordinates on image $i$, $w$ was sensor width (mm), $f$ was sensor focal length and $l$ was sensor length (mm). (2) "3D to 2D" part, including converting ROI from point cloud data (PCD) to raw images (pcd2raw) and clipping PCD to smaller part according to ROI (pcd2part). (3) "2.5D to 2D part", converting ROI from geographic shapefile to raw images (dxm2raw, extract height from DSM and obtain 3D geographic coordinates of pcd2raw) and clipping DOM and DSM by ROI (dxm2part).}
+  \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper workflow as example). This step can be separated into 3 parts: (1) the structure from motion part, build the sparse tie-point cloud, and also produce the geometry relationship among each raw images. The geometry relationship reflects in the output files, including distortion corrected images, internal and external camera parameters (int$\setminus$ext param), and camera matrix (pmatrix). (2) the multi-view stereo photogrammetry part, it densify previous sparse tie-point cloud and make geographic corrections based on the optional ground define step via \acrfull*{gcp} or \acrfull*{mtp}. (3) For those defined ground plots, export \acrfull*{dom} and \acrfull*{dsm}. (\textbf{b}) The \acrfull*{roi} maker pipeline via commercial or open sourcee tools. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2), $r_i$ represented camera rotation of image $i$, $p_i$, represented camera position of image $i$, $k_i$ represented 2D pixel coordinates on image $i$, $w$ was sensor width (mm), $f$ was sensor focal length and $l$ was sensor length (mm). (2) "3D to 2D" part, including converting ROI from point cloud data (PCD) to raw images (pcd2raw) and clipping PCD to smaller part according to ROI (pcd2part). (3) "2.5D to 2D part", converting ROI from geographic shapefile to raw images (dxm2raw, extract height from DSM and obtain 3D geographic coordinates of pcd2raw) and clipping DOM and DSM by ROI (dxm2part).}
   \label{fig:workflow}
 \end{figure}
 
 \subsubsection{3D reconstruction}
 The definition of each camera external parameters and 2D \& 3D coordinates
 
-\subsubsection{Region of Interest making}
+\subsubsection{Region of Interest (ROI) making}
+(1) for making 2D pixel coordinates on raw or undistorted images, common photo processing software can be used, e.g. open-source GIMP or commercial Photoshop. (2) for making 3D coordinates in point cloud (or 3D geographic coordinates if ground defined), common 3D processing software can be used, e.g. CloudCompare or MeshLab. (3) for making 2D geographic polygon on DOM and DSM, common \acrfull*{gis} processing software including QGIS (open source) or ArcMap (commercial) can be used to produce required shapefiles.
 
 \subsubsection{2D to 2D}
 "2D to 2D": For those predefined ground plots, the image analyzing software (e.g. Photoshop, GIMP, etc.) was used to mark 2D pixel coordinates of \acrshort*{roi} on one original images, and calculate the 2D pixel coordinates of this \acrshort*{roi} on other original images.
