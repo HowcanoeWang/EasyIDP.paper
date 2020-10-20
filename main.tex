@@ -396,18 +396,61 @@ Text
 
 \section*{Figures}
 
-\begin{figure}[h]
+\begin{figure}[!h]
   %\centering
   \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
   \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper as example). This step can be separated into 3 parts: (1) the structure from motion (SfM) part which build the sparse tie-point cloud. (2) the multi-view stereo (MVS) photogrammetry part which densify previous sparse tie-point cloud and make geographic corrections. (3) For those defined ground plots, export \acrfull*{dom} and \acrfull*{dsm}. (\textbf{b}) The \acrfull*{roi} maker pipeline via commercial or open source tools. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2). $r_i$ represented camera rotation of image $i$; $p_i$, represented camera position of image $i$; $k_i$ represented 2D pixel coordinates on image $i$; $w$ was sensor width (mm); $f$ was sensor focal length, and $l$ was sensor length (mm). (2) "3D to 2D" part (ROI from point cloud data to raw images). (3) "2.5D to 2D part" (ROI from geographic shapefile to raw images)}
   \label{fig:workflow}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[!h]
   %\centering
   \includegraphics[width=0.95\linewidth]{figures/map.pdf}
   \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (\*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
   \label{fig:map}
+\end{figure}
+
+\begin{figure}[!h]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/iou.pdf}
+  \caption{The diagram of \acrfull*{iou} calculation. The red polygon is manual marking by LabelMe, the blue polygon is EasyRIC program calculated \acrfull*{roi} on raw images. The purple polygon is the intersection of two results while the gray polygon is the union of them. The IoU equals to the intersection divide by the union.}
+  \label{fig:iou}
+\end{figure}
+
+\begin{figure}[!h]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/dom2grids.pdf}
+  \caption{tbc}
+  \label{fig:dom2girds}
+\end{figure}
+
+\begin{figure}[!h]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/roi2dxm.pdf}
+  \caption{tbc}
+  \label{fig:roi2dxm}
+\end{figure}
+
+\begin{figure}[!h]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/time_series.pdf}
+  \caption{tbc}
+  \label{fig:time}
+\end{figure}
+
+
+\begin{figure}[!h]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
+  \caption{tbc}
+  \label{fig:dist}
+\end{figure}
+
+\begin{figure}[!h]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/iou_all.pdf}
+  \caption{tbc}
+  \label{fig:iou_all}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -420,7 +463,7 @@ Text
 %%
 \section*{Tables}
 
-\begin{table}[h]
+\begin{table}[!h]
   \caption{Trail field and image collection information}
   \centering
   %% \tablesize{} %% You can specify the fontsize here, e.g., \tablesize{\footnotesize}. If commented out \small will be used.
@@ -452,14 +495,32 @@ Text
 %%                               %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section*{Additional Files}
-%   \subsection*{Additional file 1 --- Sample additional file title}
-%     Additional file descriptions text (including details of how to
-%     view the file, if it is in a non-standard format or the file % extension).  This might
-%     refer to a multi-page table or a figure.
-% 
-%   \subsection*{Additional file 2 --- Sample additional file title}
-%     Additional file descriptions text.
+\section*{Additional Files}
+  \subsection*{Additional file 1 --- Sample additional file title}
+  \begin{figure}[!h]
+    \includegraphics[width=0.95\linewidth]{figures/raw2raw.pdf}
+    %\caption{tbc}
+    \label{Apd:raw2raw}
+  \end{figure}
+  text text text
+
+  \subsection*{Additional file 2 --- Sample additional file title}
+  \begin{figure}[!h]
+    \includegraphics[width=0.95\linewidth]{figures/difficult_ground.pdf}
+    %\caption{tbc}
+    \label{Apd:diff}
+  \end{figure}
+
+  Text text text
+
+  \subsection*{Additional file 3 --- Sample additional file title}
+  \begin{figure}[!h]
+    \includegraphics[width=0.95\linewidth]{figures/template_match.pdf}
+    %\caption{tbc}
+    \label{Apd:template}
+  \end{figure}
+
+  Text text text
 
 \end{backmatter}
 
