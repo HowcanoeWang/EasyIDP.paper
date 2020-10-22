@@ -266,30 +266,50 @@ The EasyRIC is a python package without any \acrfull*{gui}, please refer to the 
 
 \subsubsection*{Input and output files}
 % supported file types
-The input file type required for this package includes: pix4d camera parameters (*.cam), pix4d joint rotation-translation matrix (pmatrix) file (*.txt), digital images (*jpeg, *png), point cloud data (*.pcd, *.ply, *.xyz), geotiff files (*.tiff, DOM and DSM), polygon shapefile (*.shp), shapefile geographic projection file (*.prj), and in the future, 3D polygon file (*.dxf).
+The input file type required for this package includes: pix4d camera parameters, pix4d joint rotation-translation matrix (pmatrix) file (*.txt), digital images (*jpeg, *png), point cloud data (*.pcd, *.ply, *.xyz), geotiff files (*.tiff, DOM and DSM), polygon shapefile (*.shp), shapefile geographic projection file (*.prj), and in the future, 3D polygon file (*.dxf).
 
 % packages used
-Several external python site-packages were used to deal with these files, all these data were stored as \textit{numpy.ndarray} based data structure for faster matrix algebra calculation. The *.cam and *.txt pure text files can be read into \textit{ndarray} by \textit{numpy} package, as stored an index python class linked to each raw image name. For *.jpeg and *.png files, the \textit{scikit-image.io.imread} module was used to load image into \textit{numpy.ndarray} format. For point cloud files, the \textit{open3d.io.read\_pcd} module was used, and for Pix4Dmapper produced *.ply files, sometimes the color information can not be correctly loaded, the \textit{plyfile} package was used to compensate the color loss. For geotiff file, the \textit{tifffile} package was used to load both image layer data to \textit{numpy.ndarray} and geo-header data which contain the offset, resolution, and geographic projection information, helpful for the transformation between pixel coordinate and geographic coordinate on geotiff images. The *.prj file can be read directly by python but \textit{pyproj} package is used to convert pure text to python geo-projection class, and functioned as a projection convertor once the shp projection was not the same with geotiff projection. For 3D polygon *.dxf file, the \textit{ezdxf} package was used to convert to \textit{numpy.ndarray} polygon.
+Several external python site-packages were used to deal with these files, all these data were stored as \textit{numpy.ndarray} based data structure for faster matrix algebra calculation. The *.txt pure text files can be read into \textit{ndarray} by \textit{numpy} package, as stored an index python class linked to each raw image name. For *.jpeg and *.png files, the \textit{scikit-image.io.imread} module was used to load image into \textit{numpy.ndarray} format. For point cloud files, the \textit{open3d.io.read\_pcd} module was used, and for Pix4Dmapper produced *.ply files, sometimes the color information can not be correctly loaded, the \textit{plyfile} package was used to compensate the color loss. For geotiff file, the \textit{tifffile} package was used to load both image layer data to \textit{numpy.ndarray} and geo-header data which contain the offset, resolution, and geographic projection information, helpful for the transformation between pixel coordinate and geographic coordinate on geotiff images. The *.prj file can be read directly by python but \textit{pyproj} package is used to convert pure text to python geo-projection class, and functioned as a projection convertor once the shp projection was not the same with geotiff projection. For 3D polygon *.dxf file, the \textit{ezdxf} package was used to convert to \textit{numpy.ndarray} polygon.
 
 % clip & output files
 By importing all these materials into the EasyRIC package, a clip function is provided to clip both point cloud data and geotiff GIS map into small sectors by given ROI polygon coordinates. Then these sectors could be saved as the same file type into disk, for future use.
 
+\subsubsection*{Camera distortion}
+The lens of camera often cause distortion of image collected, and the extreme example for this distortion application is fisheye camera. Therefore, the pixel coordinate position on image can't exactly reflect the real geometry relationship in the real world. Hence, before doing structure from motion, the camera calibration is always required. The commercial software often have build-in camera calibration model, and Pix4D even support save calibrated undistorted images \cite{pix4d_support_menu_2020}. The transform from original distorted images pixel coordinate $(x_d, y_d)$ to corrected undistorted pixel coordinate $(x_u, y_u)$ by Pix4D output camera distortion coefficients (\textit{calibrated\_camera\_parameters.txt} file, radial distortion $(r_1, r_2, r_3)$ and tangential distortion $(t_1, t_2)$) \cite{pix4d_support_how_2020}:
+
+\begin{align}
+  \label{eq:px_correct}
+  \text{let:} &
+  \left\{\begin{array}{lll}
+    x_h & = & (x_d - c_x) / f \\
+    y_h & = & (y_d - c_y) / f \\
+    \sigma & = & x_h^2 + y_h^2 \\
+    k      & = & 1 + r_1 \cdot \sigma + r_2 \cdot \sigma^2 + r_3 \cdot \sigma^3 \\
+    x_{hd} & = & k \cdot x_h + t_1 \cdot x_h \cdot y_h + t_2 \cdot (\sigma + 2 \cdot x_h^2) \\
+    y_{hd} & = & k \cdot y_h + t_2 \cdot x_h \cdot y_h + t_1 \cdot (\sigma + 2 \cdot y_h^2)
+  \end{array} \right. \nonumber \\
+  \text{then:} &
+  \left\{\begin{array}{lll}
+    x_u & = & f \cdot x_{hd} + c_x \\
+    y_u & = & f \cdot y_{hd} + c_y
+  \end{array} \right.
+\end{align}
+
+where, $c_x$ and $c_y$ is the image center in pixel, width (horizontal) and length (vertical), respectively. $f$is camera focal length in mm. 
+
 \subsubsection*{Transform ROI from raw to raw: 2D to 2D}
-The geometry of transforming \acrfull*{roi} on one image to another image is shown in Figure \ref{fig:workflow}.c-1. Then, transforming a polygon can be simplified to repeat transforming each polygon corner point to another photo. In this geometry, there are two coordinates, one is the real world geographic coordinate ($xyz_{geo}$, unit is $m$), the other is the raw image pixel coordinate ($xy_{pix}$, unit is pixel). Assuming there are two images, the first image ($raw_1$) is where we use annotation software (e.g. LabelMe) marked ROI, the other image ($raw_2$) is the target image we want this ROI transformed to. The $K_1$ in $xy_{pix}$ coordinate is one polygon corner point on $raw_1$, this point related to the point ($K'$) in real world, and this point is record as $K_2$ on $raw_2$. The $r_i (\omega_i, \varphi_i, \kappa_i)$ represents the camera rotation angles \cite{pix4d_documentation_yaw_2020}, $p_i$ represents the camera position in real world system ($xyz_{geo}$), $f$ is the camera focal length in $mm$, $w$ and $l$ represents the camera sensor width and length in $mm$, respectively. All previous photo related parameters could be obtained in *.cam files.
+The geometry of transforming \acrfull*{roi} on one image to another image is shown in Figure \ref{fig:workflow}.c-1. Then, transforming a polygon can be simplified to repeat transforming each polygon corner point to another photo. In this geometry, there are two coordinates, one is the real world geographic coordinate ($xyz_{geo}$, unit is m), the other is the raw image pixel coordinate ($xy_{pix}$, unit is pixel). Assuming there are two images, the first image ($raw_1$) is where we use annotation software (e.g. LabelMe) marked ROI, the other image ($raw_2$) is the target image we want this ROI transformed to. The $K_1$ in $xy_{pix}$ coordinate is one \acrshort*{roi} polygon corner point on $raw_1$, this point related to the point ($K'$) in real world, and is record as $K_2$ on $raw_2$. The $r_i (\omega_i, \varphi_i, \kappa_i)$ represents the camera rotation angles \cite{pix4d_support_yaw_2020}, $p_i$ represents the camera position in real world system ($xyz_{geo}$), $w$ and $l$ represents the camera sensor width (horizontal) and length (vertical) in mm, respectively. All previous photo related parameters could be obtained in \textit{calibrated\_camera\_parameters.txt} file.
 
-As the Pix4D document demonstrated \cite{pix4d_documentation_how_2020}, the transformation from real world point $K' (X, Y, Z)$ to image pixel coordinate $K_i (x_{k_i}, y_{k_i})$ is:
+As the Pix4D document demonstrated \cite{pix4d_support_how_2020}, the transformation from real world point $K' (X, Y, Z)$ to image pixel coordinate $K_i (x_{k_i}, y_{k_i})$ by Equation \ref{eq:px_correct} is:
 
-\begin{equation}
-  \begin{cases}
-    x_{k_1} = - f \cdot \dfrac{X'}{Z'} + x_{center} \\
-    y_{k_2} = - f \cdot \dfrac{Y'}{Z'} + y_{center}
-  \end{cases}
-\end{equation}
-
-where, $f$ is camera focal length, $x_{center}$ and $y_{center}$ is the image center pixel coordinate ($xy_{pix}$), width (horizontal) and length (vertical), respectively. $(X', Y', Z')$ can be calculated by:
-
-\begin{eqnarray}
-  \left[
+\begin{align}
+  \label{eq:xyz_prime}
+  &\begin{cases}
+    x_{k_1} = - f \cdot \dfrac{X'}{Z'} + c_x \\
+    y_{k_1} = - f \cdot \dfrac{Y'}{Z'} + c_y
+  \end{cases} \nonumber \\
+  &\text{where, } \nonumber \\
+  &\left[
     \begin{array}{c} X' \\ Y' \\ Z' \end{array} 
   \right]
   =
@@ -297,9 +317,9 @@ where, $f$ is camera focal length, $x_{center}$ and $y_{center}$ is the image ce
   \left(
     \left[\begin{matrix} X \\ Y \\ Z \end{matrix}\right] - \mathbf{p_i}
   \right)
-\end{eqnarray}
+\end{align}
 
-where, $\mathbf{R_i}$ is the rotation matrix of camera parameters can be calculated by $r_i (\omega_i, \varphi_i, \kappa_i)$ \cite{pix4d_documentation_how_2020}:
+where, $\mathbf{R_i}$ is the rotation matrix of camera parameters can be loaded from  or calculated by $r_i (\omega_i, \varphi_i, \kappa_i)$ \cite{pix4d_support_how_2020}:
 
 \begin{align}
   \mathbf{R_i} & = \mathbf{R}_{x_i}(\omega_i) \mathbf{R}_{y_i}(\varphi_i) \mathbf{R}_{z_i}(\kappa_i) \nonumber\\
@@ -325,7 +345,7 @@ where, $\mathbf{R_i}$ is the rotation matrix of camera parameters can be calcula
         sin(\kappa_i) & cos(\kappa_i)  & 0 \\
         0             & 0              & 1
       \end{matrix} 
-    \right] %\\
+    \right] \nonumber %\\
   %& = 
   %  \left[ 
   %    \begin{matrix} 
@@ -344,9 +364,9 @@ where, $\mathbf{R_i}$ is the rotation matrix of camera parameters can be calcula
   %  \right] 
 \end{align}
 
-However, previous K' (dim=3) to pixel $k_1$ (dim=2) is a dimension reduction step with Z information loss is not reversible. Transforming from given pixel coordinate $(x_{k1}, y_{k1})$ back to real world (revert Equation 2 and 1) could only get the equation with $Z_1'$ as parametric, which means without knowing the exact value of $Z_1'$:
+However, previous $K' (X, Y, Z)$ to pixel $k_i (x_{k_i}, y_{k_i})$ calculation is a dimension reduction step with Z information loss, which is not reversible. Transforming from given pixel coordinate $k_1$ back to real world $K'$ (revert Equation \ref{eq:xyz_prime} and \ref{eq:px_correct}) could only get the equation with $Z_1'$ as parametric:
 
-\begin{equation}
+$$
   K' = 
   \begin{bmatrix}
     \begin{matrix}
@@ -367,35 +387,57 @@ However, previous K' (dim=3) to pixel $k_1$ (dim=2) is a dimension reduction ste
       \dfrac{x_{1center} - x_{k1}}{f} \\ \dfrac{y_{1center} - y_{k1}}{f} \\ 1
     \end{matrix}
   \end{bmatrix} + T_1
-\end{equation}
+$$
 
-It will produce a line rather than a specific point in the real world as well as on the other image, in this case, the most accurate method is marking the ROI on two images, and then calculate their route intersection to get the exact $Z'$ value of $K'$ in real world, then the follow Equation 1 and 2 to calculate the pixel coordinate on the third image. 
+It means without knowing the exact value of $Z_1'$, previous step will produce a line rather than a specific point in the real world as well as on the other image, in this case, the most accurate method is marking the ROI on two images, and then calculate their route intersection to get the exact $Z'$ value of $K'$ in real world, then the follow Equation \ref{eq:xyz_prime} to get the pixel coordinate on the third image. 
 
 \subsubsection*{Transform ROI from PCD to raw: 3D to 2D}
+When it comes to point clouds (Figure \ref{fig:workflow}.c-2), the Pix4D software will automatically produce \acrfull*{pcd} with XYZ value in geographic coordinates ($PCD_{xyz}$), in this case, the original XYZ often quite large, for UTM zone 54N projection is around (360000, 4000000). To significantly decrease the file size of PCD, it produces an \textit{offset.xyz} file which minus all points with this offset $(X_{offset}, Y_{offset}, Z_{offset})$. Hence the ROI coordinate $(X_{roi}, Y_{roi}, Z_{roi})$ marked in Pix4D produced point cloud need to add this offset to be the real world coordinate $(X_{real}, Y_{real}, Z_{real})$, but it is software dependent, Agisoft support export PCD with original data without offset.
 
-...(dxm2raw, extract height from DSM and obtain 3D geographic coordinates of pcd2raw) and clipping DOM and DSM by ROI (dxm2part).
+After getting 3D coordinate in real world, the 3D ($xyz_{geo}$) to 2D ($xy_{pix}$) calculation can be conducted by Equation \ref{eq:xyz_prime}, or if perspective lens cameras are used (not fisheye or spherical camera), the joint rotation-translation matrix (pmatrix) which calculated by Pix4D could be directly used to do this calculation \cite{pix4d_support_what_2020}:
+
+$$
+\begin{bmatrix}\begin{matrix} x \\ y \\ z\end{matrix}\end{bmatrix}
+= PMat_{3\times4} \cdot 
+\left(\begin{bmatrix}\begin{matrix} 
+  X_{real} \\ Y_{real} \\ Z_{real} \\ 1
+\end{matrix}\end{bmatrix} 
+- 
+\begin{bmatrix}\begin{matrix} 
+  X_{offset} \\ Y_{offset} \\ Z_{offset} \\ 1
+\end{matrix}\end{bmatrix}
+\right)
+$$
 
 \subsubsection*{Transform ROI from GIS map to raw: 2.5D to 2D}
-pass 
+As shown in Figure \ref{fig:workflow}.c-3), the \acrfull*{roi} of GIS coordinates often stored as shapefile polygon (*.shp), it could be loaded by previous $input and output files$ section. However, sometimes the projection of shapefile are not the same with GIS products' (DOM and DSM) projection. The projection coordinate transform is provided by EasyRIC to solve this inconsistency. Meanwhile, the shapefile polygon only contains XY geographic information ($xy_{geo}$), a transformation from geographic coordinate to DSM's pixel coordinate is required to get the height (Z) value of ROI on related DSM pixel ($z_{geo}$). After getting the full geographic coordinates ($xyz_{geo}$), the same procedure like pervious 3D to 2D section could be operated.
 
 \subsection*{Case Study: Lotus Ponds}
 
 \subsubsection*{Field data and image collection}
 To obtain the materials for package developing and testing, a lotus (\textit{Nelumbo nucifera}) experimental plot in Nishi-Tokyo, Tokyo, Japan was used as a case study (Figure \ref{fig:map}.a). The total 112 different varieties of lotus were sown in squire cultivation ponds on the ???, 2017 (Figure \ref{fig:map}.b). The ordinary local management practices were used to managed all trails.
 
-The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight height is 30 m and the flight speed is ??? m/s. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used as default, and the \acrfull*{gcp} were marked by ??? GPS device (Figure \ref{fig:map}.c). The device for 3D reconstruction processing includes Intel Xeon E5-2690 v4 @2.60GHz CPU; 128GB RAM; two NVIDIA GeForce GTX1080Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}.
+The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight height was 30 m. The flight route was designed by ??? software and the heading overlap and side overlap were ??? \% and ??? \% respectively. The Pix4Dmapper Pro software (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used as default, and the \acrfull*{gcp} were marked by ??? GPS device (Figure \ref{fig:map}.c). The device for 3D reconstruction processing includes Intel Xeon E5-2690 v4 @2.60GHz CPU; 128GB RAM; two NVIDIA GeForce GTX1080Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}.
 
-\subsection*{Accuracy assessment and evaluation}
+After processing all flight time and getting DOM and DSM, the QGIS was used to marking and exporting plot boundary polygons and their id on the map.
 
-\subsubsection*{Intersection of union (IoU)}
-IoU calculation and \cite{tresch_easy_2019}
+\subsubsection*{Height calculation}
+In this case study, after clipping out the \acrfull*{roi} of each pond, two heights are calculated. The one is the 5 percentile mean height, equals to the mean value of all point heights which smaller that 5 percentile threshold, used for catching the height of water surface to define the height of ROI. The other is the 95 percentile mean height, equals to the mean value of all point heights which bigger than 95 percentile threshold, used for catching the top of lotus minus ground mean height to get the lotus height.
 
-\subsubsection*{Time-series traits evaluation}
-calculation of coverage
+\subsubsection*{Performance evaluation}
+To determine how the transformation performs and what contributes the deviation, the manually determined ideal transformation results made by LabelMe annotation software were used to compare with EasyRIC results. Three indicators, \acrfull*{iou} performance criterion \cite{everingham_pascal_2010}, precision, and recall, were used to evaluate the similarity between package output and manual marking, and can be calculated by (Figure \ref{fig:iou}): 
 
-calculation of height
+$$
+\begin{array}{lcl}
+  IoU & = & \dfrac{\text{intersection area}}{\text{union area}} \\
+  precision & = & \dfrac{\text{intersection area}}{\text{program area}} \\
+  recall & = & \dfrac{\text{intersection area}}{\text{manual area}} \\
+\end{array}
+$$
 
+Firstly, three ponds with different lotus density (N3E6: sparsest, S2W4: medium sparse, N2W5: densest) were selected, and all related raw images were marked manually. The pixel Euclidean distance from IoU center to image center $(c_x, c_y)$ was also calculated, the relationship between indicator values and Euclidean distance was simply discussed.
 
+Secondly, for each pond, the smallest IoU Euclidean distance raw image were selected to mark manual reference, and overall trend of indicators were simply compared.
 
 \section*{Results}
 
@@ -424,6 +466,8 @@ API for most \acrshort*{sfm} software packages
 However, this method involves extra workload. A pre-experiment was conducted that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$, the pre-experiment the result is shown in Additional file 1. However, this simple assumption involves great deviation, and the result does not show a great accuracy, which need to be improved in the future.
 
 Link between Aerial and Terrestrial photos.
+
+Some day, the ground is leaned, so the mean height can't reflect the actual height
 
 %1. Distortion correction (height choice is the key)
 %
@@ -507,6 +551,28 @@ Text
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
+%% Additional Files              %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Additional Files}
+% File name (e.g. Additional file 1)
+% File format including the correct file extension for example .pdf, .xls, .txt, .pptx (including name and a URL of an appropriate viewer if format is unusual)
+% Title of data
+% Description of data
+\subsection*{Additional file 1: Figure S1}
+The pre-experiment results of transforming \acrfull*{roi} on raw image to other raw images, assuming the camera height as missing Z values. (a) is the image where ROI marked. (b)-(e) shows some of ROI transform results. 
+
+\subsection*{Additional file 2: Figure S2}
+% difficult_ground
+Text text text
+
+\subsection*{Additional file 3: Figure S3}
+% template match
+Text text text
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
 %% Figures                       %%
 %%                               %%
 %% NB: this is for captions and  %%
@@ -519,7 +585,7 @@ Text
 %%
 %% Do not use \listoffigures as most will included as separate files
 
-\section*{Figures}
+%\section*{Figures}
 
 \begin{figure}[!htb]
   %\centering
@@ -586,7 +652,7 @@ Text
 
 %% Use of \listoftables is discouraged.
 %%
-\section*{Tables}
+%\section*{Tables}
 
 \begin{table}[!htb]
   \caption{Trail field and image collection information}
@@ -613,27 +679,6 @@ Text
   }
   \label{tab:diginfo}
 \end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                               %%
-%% Additional Files              %%
-%%                               %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section*{Additional Files}
-% File name (e.g. Additional file 1)
-% File format including the correct file extension for example .pdf, .xls, .txt, .pptx (including name and a URL of an appropriate viewer if format is unusual)
-% Title of data
-% Description of data
-\subsection*{Additional file 1: Figure S1}
-
-\subsection*{Additional file 2: Figure S2}
-% difficult_ground
-Text text text
-
-\subsection*{Additional file 3: Figure S3}
-% template match
-Text text text
 
 \end{backmatter}
 
