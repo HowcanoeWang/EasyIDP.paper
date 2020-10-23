@@ -233,15 +233,9 @@ Para7: Objectives
 
 \section*{Implementation}
 
-This study implemented a open-source python package called EasyRIC (easy reconstruction image converter) to cropping \acrshort*{sfm} software (e.g. Pix4Dmapper, Agisoft Metashape, etc.) produced products based on \acrfull*{roi} and linking them on original images. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl} support. For the package performance reliability, the 8GB of RAM and CPU with at 3.0 GHz are recommended. The requirements to use this packages requires: the Python >= 3.7, numpy >= 1.18.1, scikit-image >= 0.16.2, opencv-python >= 3.4.2.16, pyproj == 2.6.1.post1, pyparsing >= 2.0.1 are required, and following pure python packages were included in source code without installation: pyshp, Send2Trash, ezdxf, and plyfile. The user manual and source code can be accessed via: \url{https://github.com/HowcanoeWang/EasyRIC} and the License is GPL-3.0 which is free to use for any purpose, forever.
+This study implemented a open-source python package called EasyRIC (easy reconstruction image converter) to cropping \acrshort*{sfm} software (e.g. Pix4Dmapper, Agisoft Metashape, etc.) produced products based on \acrfull*{roi} and linking them on original images. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl} support. For the package performance reliability, the 8GB of RAM and CPU with at 3.0 GHz are recommended. The user manual and source code can be accessed via: \url{https://github.com/HowcanoeWang/EasyRIC} and the License is GPL-3.0 which is free to use for any purpose, forever.
 
-The general workflow of this tool was shown in Figure \ref{fig:workflow}. There were three main parts of this workflow, including two input data preparations: 3D reconstruction outputs (Figure \ref{fig:workflow}.a) and corresponding \acrfull*{roi} by other tools (Figure \ref{fig:workflow}.b); and EasyRIC converting tool core functions (Figure \ref{fig:workflow}.c). Each part had tight correspondence with 3D reconstruction workflow, and was split into (1) SfM stage, (2) MVS stage, and (3) GIS stage respectively. 
-
-The first SfM stage (Figure \ref{fig:workflow}.c-1) provides the experimental function that convert the \acrfull*{roi} on one raw images (2D) to the other raw images (2D) just after SfM stages ("2D to 2D") in \acrlong*{sfm} software without further time-consuming MVS densification and GIS outputs steps. It saves a plenty of time in data processing, however, our case study pre-experiment result (Additional file 1) showed this experimental stage still needs some improvements to make the accuracy acceptable without double ROI making.
-
-The second MVS stage (Figure \ref{fig:workflow}.c-2) transforms the \acrfull*{roi} on point cloud data (3D) to the related raw images (2D) after MVS densification in \acrlong*{sfm} software ("3D to 2D"). It also enables the clipping function of point cloud data within given \acrshort*{roi}, which could help increase the feasibility of data analysis and decrease the storage space.
-
-The third GIS stage (Figure \ref{fig:workflow}.c-3) transforms the \acrfull*{roi} on \acrfull*{gis} products to related raw images (2D). Commonly, the ROI is marked manually by GIS software on \acrfull*{dom}. The height information is provided by \acrfull*{dsm}. Compared with 3D information extracted directly on point clouds, this geometry information is combined by XY axis from DOM and Z axis from DSM, named 2.5D to distinguish with point cloud 3D. This stage is also specified as "2.5D to 2D". Besides, it provides functions of clipping \acrshort*{dom} and \acrshort*{dsm} along \acrshort*{roi} or into given size grids with labels, not only helps the management of data, but also helps the connection to deep learning framework directly.
+The general workflow of this tool was shown in Figure \ref{fig:workflow}. There were three main parts of this workflow, including two input data preparations: a) 3D reconstruction outputs (Figure \ref{fig:workflow}.a) and b) corresponding \acrfull*{roi} by other tools (Figure \ref{fig:workflow}.b); and c) EasyRIC converting tool core functions (Figure \ref{fig:workflow}.c), highly correspondence with 3D reconstruction workflow: (1) SfM stage, (2) MVS stage, and (3) GIS stage respectively. 
 
 \subsection*{Input data preparation}
 
@@ -250,16 +244,16 @@ The third GIS stage (Figure \ref{fig:workflow}.c-3) transforms the \acrfull*{roi
 The good quality of input image data are the fundamental of \acrfull*{sfm} process as well as the EasyRIC package. The images with balanced brightness, exposure, and minimum motion blur are of great importance. Over 50\% overlapping among each adjacent images is also recommended. Though \acrfull*{gcp} or \acrfull*{mtp}, or even \acrfull*{rtk} are optional for \acrshort*{sfm} software. It is strongly recommended to set several object or tags or scalebars to calibrate and define geographic positions. One option is Chilitags (\url{https://github.com/chili-epfl/chilitags}), the automatic workflow decrease a plenty of workload in current \acrshort*{sfm} software.
 
 % SfM workflow
-After getting good quality of data, the \acrshort*{sfm} workflow is required.Currently, there are many \acrshort*{sfm} software available, can be split into commercial and open-source two classes. The most often used commercial software include Pix4Dmapper and Agisoft Metashape. For open-source software, including OpenMVG (\url{http://openmvg.readthedocs.io/en/latest}), libMV (\url{https://developer.blender.org/tag/libmv}), VisualSFM (\url{http://ccwu.me/vsfm}), Bundler (\url{http://www.cs.cornell.edu/~snavely/bundler}), FieldReconst (\url{http://cse.naro.affrc.go.jp/rsugiura/FieldReconst}), and so on. Compared with commercial software, most of the open-source software can not deal with the full process of \acrshort*{sfm}, as Zhu et al., \cite{zhu_quantification_2020} and Hui et al,. \cite{hui_image-based_2018} applied in their projects, many software including VisualSFM, \acrfull*{pmvs} \cite{furukawa_accurate_2010}, \acrfull*{pcl} \cite{rusu_3d_2011}, and Geomagic Studio software (Raindrop Geomagic, Morrisville, NC, USA) are used to implement the full process that imbedded in Pix4Dmapper. For this study, the commercial Pix4Dmapper was used as its default setting to produce required camera parameters (pmatrix, external and internal parameters), \acrfull*{pcd}, and GIS products \acrfull*{dom} and \acrfull*{dsm}, and all outputs of Pix4DMapper have been supported and tested. For future, other commercial software or open source software will be supported.
+After getting acceptable quality image data, the \acrshort*{sfm} workflow is required. Currently, there are many \acrshort*{sfm} software available, can be split into commercial and open-source two classes. The most often used commercial software include Pix4Dmapper and Agisoft Metashape. For open-source software, including OpenMVG (\url{http://openmvg.readthedocs.io/en/latest}), libMV (\url{https://developer.blender.org/tag/libmv}), VisualSFM (\url{http://ccwu.me/vsfm}), Bundler (\url{http://www.cs.cornell.edu/~snavely/bundler}), FieldReconst (\url{http://cse.naro.affrc.go.jp/rsugiura/FieldReconst}), and so on. Compared with commercial software, most of the open-source software can not deal with the full process of \acrshort*{sfm}, as Zhu et al., \cite{zhu_quantification_2020} and Hui et al,. \cite{hui_image-based_2018} applied in their projects, many software including VisualSFM, \acrfull*{pmvs} \cite{furukawa_accurate_2010}, \acrfull*{pcl} \cite{rusu_3d_2011}, and Geomagic Studio software (Raindrop Geomagic, Morrisville, NC, USA) are used to implement the full process that imbedded in Pix4Dmapper. For this study, the commercial Pix4Dmapper was used as its default setting to produce required camera parameters (pmatrix, external and internal parameters), \acrfull*{pcd}, and GIS products \acrfull*{dom} and \acrfull*{dsm}, and all outputs of Pix4DMapper have been supported and tested. For future, other commercial software or open source software will be supported.
 
 \subsubsection*{Region of Interest (ROI) making}
 Currently, the EasyRIC package hasn't provide any \acrfull*{gui} for manual \acrfull*{roi} marking. So different external software to marking ROI on different stage outputs are required.
 
-For the first SfM stage, which requires obtaining 2D pixel coordinates on raw images, common photo processing software can be used, e.g. open-source GIMP or commercial Photoshop, these software displays the pixel coordinate where mouse hover. Then these 2D coordinate can be copied or write to txt file or csv file for EasyRIC importing. Also, other deep learning annotation software which produce json annotation files also supported and recommended, for example, LabelMe (\url{https://github.com/wkentaro/labelme}) has been tested and supported in this package.
+For the SfM stage (Figure \ref{fig:workflow}.b-1), which requires obtaining 2D pixel coordinates on raw images, common photo processing software can be used, e.g. open-source GIMP or commercial Photoshop, these software displays the pixel coordinate where mouse hover. Then these 2D coordinate can be copied or write to txt file or csv file for EasyRIC importing. Also, other deep learning annotation software which produce json annotation files also supported and recommended, for example, LabelMe (\url{https://github.com/wkentaro/labelme}) has been tested and supported in this package.
 
-For the second MVS stage, which produces 3D \acrfull*{pcd}, the 3D coordinate is required. Common point cloud processing software which can pick point cloud points and get the 3D coordinate of each point could be used (e.g. CloudCompare, MeshLab, etc.). The open-source CloudCompare (\url{http://cloudcompare.org/}) has been tested in this project and support export picked points coordinates to txt file for later usage. The tutorial for using CloudCompare to make ROI can be referred on our package user manual. For future, importing the AutoCAD dxf 3D polygon file will be supported.
+For the MVS stage (Figure \ref{fig:workflow}.b-2), which produces 3D \acrfull*{pcd}, the 3D coordinate is required. Common point cloud processing software which can pick point cloud points and get the 3D coordinate of each point could be used (e.g. CloudCompare, MeshLab, etc.). The open-source CloudCompare (\url{http://cloudcompare.org/}) has been tested in this project and support export picked points coordinates to txt file for later usage. The tutorial for using CloudCompare to make ROI can be referred on our package user manual. For future, importing the AutoCAD dxf 3D polygon file will be supported.
 
-For the third GIS stage, which requires obtaining 2D geographic coordinates on DOM and DSM, common \acrfull*{gis} processing software including QGIS (open source) or ArcMap (commercial) can be used to produce required polygon shapefiles (*.shp). The produced shp file can be used as the input for EasyRIC package.
+For the GIS stage (Figure \ref{fig:workflow}.b-3), which requires obtaining 2D geographic coordinates on DOM and DSM, common \acrfull*{gis} processing software including QGIS (open source) or ArcMap (commercial) can be used to produce required polygon shapefiles (*.shp). The produced shp file can be used as the input for EasyRIC package.
 
 \subsection*{Package Algorithms}
 The EasyRIC is a python package without any \acrfull*{gui}, please refer to the document \url{https://www.to.be.continued.org} for detailed package usage. Instead of introducing how the package is used, this section demonstrate how the calculation algorithm implemented.
@@ -298,6 +292,8 @@ The lens of camera often cause distortion of image collected, and the extreme ex
 where, $c_x$ and $c_y$ is the image center in pixel, width (horizontal) and length (vertical), respectively. $f$is camera focal length in mm. 
 
 \subsubsection*{Transform ROI from raw to raw: 2D to 2D}
+The first SfM stage (Figure \ref{fig:workflow}.c-1) provides the experimental function that convert the \acrfull*{roi} on one raw images (2D) to the other raw images (2D) just after SfM stages ("2D to 2D") in \acrlong*{sfm} software without further time-consuming MVS densification and GIS outputs steps. It saves a plenty of time in data processing, however, our case study pre-experiment result (Figure S1, Additional file 1) showed this experimental stage still needs some improvements to make the accuracy acceptable without double ROI making.
+
 The geometry of transforming \acrfull*{roi} on one image to another image is shown in Figure \ref{fig:workflow}.c-1. Then, transforming a polygon can be simplified to repeat transforming each polygon corner point to another photo. In this geometry, there are two coordinates, one is the real world geographic coordinate ($xyz_{geo}$, unit is m), the other is the raw image pixel coordinate ($xy_{pix}$, unit is pixel). Assuming there are two images, the first image ($raw_1$) is where we use annotation software (e.g. LabelMe) marked ROI, the other image ($raw_2$) is the target image we want this ROI transformed to. The $K_1$ in $xy_{pix}$ coordinate is one \acrshort*{roi} polygon corner point on $raw_1$, this point related to the point ($K'$) in real world, and is record as $K_2$ on $raw_2$. The $r_i (\omega_i, \varphi_i, \kappa_i)$ represents the camera rotation angles \cite{pix4d_support_yaw_2020}, $p_i$ represents the camera position in real world system ($xyz_{geo}$), $w$ and $l$ represents the camera sensor width (horizontal) and length (vertical) in mm, respectively. All previous photo related parameters could be obtained in \textit{calibrated\_camera\_parameters.txt} file.
 
 As the Pix4D document demonstrated \cite{pix4d_support_how_2020}, the transformation from real world point $K' (X, Y, Z)$ to image pixel coordinate $K_i (x_{k_i}, y_{k_i})$ by Equation \ref{eq:px_correct} is:
@@ -392,7 +388,9 @@ $$
 It means without knowing the exact value of $Z_1'$, previous step will produce a line rather than a specific point in the real world as well as on the other image, in this case, the most accurate method is marking the ROI on two images, and then calculate their route intersection to get the exact $Z'$ value of $K'$ in real world, then the follow Equation \ref{eq:xyz_prime} to get the pixel coordinate on the third image. 
 
 \subsubsection*{Transform ROI from PCD to raw: 3D to 2D}
-When it comes to point clouds (Figure \ref{fig:workflow}.c-2), the Pix4D software will automatically produce \acrfull*{pcd} with XYZ value in geographic coordinates ($PCD_{xyz}$), in this case, the original XYZ often quite large, for UTM zone 54N projection is around (360000, 4000000). To significantly decrease the file size of PCD, it produces an \textit{offset.xyz} file which minus all points with this offset $(X_{offset}, Y_{offset}, Z_{offset})$. Hence the ROI coordinate $(X_{roi}, Y_{roi}, Z_{roi})$ marked in Pix4D produced point cloud need to add this offset to be the real world coordinate $(X_{real}, Y_{real}, Z_{real})$, but it is software dependent, Agisoft support export PCD with original data without offset.
+The second MVS stage (Figure \ref{fig:workflow}.c-2) transforms the \acrfull*{roi} on point cloud data (3D) to the related raw images (2D) after MVS densification in \acrlong*{sfm} software ("3D to 2D"). It also enables the clipping function of point cloud data within given \acrshort*{roi}, which could help increase the feasibility of data analysis and decrease the storage space.
+
+For point cloud data, the Pix4D software will automatically produce \acrfull*{pcd} with XYZ value in geographic coordinates ($PCD_{xyz}$), in this case, the original XYZ often quite large, for UTM zone 54N projection is around (360000, 4000000). To significantly decrease the file size of PCD, it produces an \textit{offset.xyz} file which minus all points with this offset $(X_{offset}, Y_{offset}, Z_{offset})$. Hence the ROI coordinate $(X_{roi}, Y_{roi}, Z_{roi})$ marked in Pix4D produced point cloud need to add this offset to be the real world coordinate $(X_{real}, Y_{real}, Z_{real})$, but it is software dependent, Agisoft support export PCD with original data without offset.
 
 After getting 3D coordinate in real world, the 3D ($xyz_{geo}$) to 2D ($xy_{pix}$) calculation can be conducted by Equation \ref{eq:xyz_prime}, or if perspective lens cameras are used (not fisheye or spherical camera), the joint rotation-translation matrix (pmatrix) which calculated by Pix4D could be directly used to do this calculation \cite{pix4d_support_what_2020}:
 
@@ -410,7 +408,9 @@ $$
 $$
 
 \subsubsection*{Transform ROI from GIS map to raw: 2.5D to 2D}
-As shown in Figure \ref{fig:workflow}.c-3), the \acrfull*{roi} of GIS coordinates often stored as shapefile polygon (*.shp), it could be loaded by previous $input and output files$ section. However, sometimes the projection of shapefile are not the same with GIS products' (DOM and DSM) projection. The projection coordinate transform is provided by EasyRIC to solve this inconsistency. Meanwhile, the shapefile polygon only contains XY geographic information ($xy_{geo}$), a transformation from geographic coordinate to DSM's pixel coordinate is required to get the height (Z) value of ROI on related DSM pixel ($z_{geo}$). After getting the full geographic coordinates ($xyz_{geo}$), the same procedure like pervious 3D to 2D section could be operated.
+The third GIS stage (Figure \ref{fig:workflow}.c-3) transforms the \acrfull*{roi} on \acrfull*{gis} products to related raw images (2D). Commonly, the ROI is marked manually by GIS software on \acrfull*{dom}. The height information is provided by \acrfull*{dsm}. Compared with 3D information extracted directly on point clouds, this geometry information is combined by XY axis from DOM and Z axis from DSM, named 2.5D to distinguish with point cloud 3D. This stage is also specified as "2.5D to 2D". Besides, it provides functions of clipping \acrshort*{dom} and \acrshort*{dsm} along \acrshort*{roi} or into given size grids with labels, not only helps the management of data, but also helps the connection to deep learning framework directly.
+
+The \acrfull*{roi} of GIS coordinates often stored as shapefile polygon (*.shp), it could be loaded by previous $input and output files$ section. However, sometimes the projection of shapefile are not the same with GIS products' (DOM and DSM) projection. The projection coordinate transform is provided by EasyRIC to solve this inconsistency. Meanwhile, the shapefile polygon only contains XY geographic information ($xy_{geo}$), a transformation from geographic coordinate to DSM's pixel coordinate is required to get the height (Z) value of ROI on related DSM pixel ($z_{geo}$). After getting the full geographic coordinates ($xyz_{geo}$), the same procedure like pervious 3D to 2D section could be operated.
 
 \subsection*{Case Study: Lotus Ponds}
 
@@ -439,35 +439,41 @@ Firstly, three ponds with different lotus density (N3E6: sparsest, S2W4: medium 
 
 Secondly, for each pond, the smallest IoU Euclidean distance raw image were selected to mark manual reference, and overall trend of indicators were simply compared.
 
-\section*{Results}
+\section*{Results and Discussion}
 
-\subsection*{Use case 1: Point cloud segmentation}
+\subsection*{Use case 1: deep learning training data preparation}
+% the DOM is too large to use for DL directly
+For most deep learning frameworks, the original \acrfull*{dom} output of \acrfull*{sfm} software could not be used directly. The common input image size often smaller than 1,000$\times$1,000, otherwise, the memory cost for convolution network would become unacceptable. However, the original DOM image size often over 10,000$\times$10,000 pixels, which makes clipping to acceptable size is of great importance. Though common GIS software (e.g. ArcGIS or QGIS) provide toolboxes for clipping a whole DOM to small grids (parts), and may also provide programmable API for script or batch processing, to our best practical experiences, the processing steps as well as the API learning cost build a wall beyond widely spread use. In this EasyRIC package, a solution is provided within 10 line codes to solve this requirements. Figure \ref{fig:dom2girds}.a shows some of the clipping grids output (geotiff file) in windows file management system. And those sector images still contain geographic information which can be overlaid over original DOM image directly (Figure \ref{fig:dom2girds}.b). The clipped grids sector also help another pain spot: data annotation.
+
+% the annotation on DOM is not convenient
+The deep learning training data annotation on original DOM by common digital camera image annotation software. For those small objects, previous clipping method provides a solution that making DOM as common small size digital camera image. For those objects whose size greater than grids, e.g. the plot boundary or field boundary in agricultural application, there is a mature workflow to label polygons on DOM by GIS software. However, the format of GIS software outputs (often *.shp file) could not be used directly as deep learning training data annotation. Also, how to conveniently linking previous large object to previous clipped grid, which needs breaking down (or called intersection) to each grid is another challenge. The EasyRIC also provides a 10 line codes solution for this task. Figure \ref{fig:dom2girds}.c shows how an object cross grids be clipped into each grids, and for the view of each grid, all the annotations beyond this grid could be automatically transferred to LabelMe, an common deep learning training data annotation software, supported json file, and could be imported to deep learning framework directly.
+
+\subsection*{Use case 2: Clipping 3D reconstruction products}
+% also support clipped other 
+
+% save space + easy to analysis
+
+% time-series
 Compare \acrshort*{roi} by time series
 
 In this part, both raw photo? DOM? and point clouds should be displayed? Clipping point clouds may requires Open3D packages, which can not guarantee easy to be packed up.
-
-\subsection*{Use case 2: plot segmentation}
 
 Find \acrshort*{roi} in \acrshort*{sfm} products on the raw images
 
 text \cite{ma_calculation_2019, guo_illumination_2013}
 should including from DOM(DSM) coordinates (GIS or pixel) and point clouds (3D) coordinates to raw images.
 
-\subsection*{Use case 3: Efficient annotation of training data for ML/DL}
+\subsection*{Use case 3: Transformation on raw image}
+previous study also use pmatrix, but not like this study so systematically
+% how it performs (IoU accuracy analysis)
+
+% the resolution problem
+
+% efficient annotation of training data for ML/DL
 3D/2.5D small region -> 2D->Raw small region, selecting strategy for efficient annotation of training data for ML/DL.
 
-\section*{Discussion}
-
-%\subsection*{Future prospects}
-API for most \acrshort*{sfm} software packages
-
-2D Photo to 2D photo without SfM products
-\subsection*{Pre-experiment for 2D to 2D}
-However, this method involves extra workload. A pre-experiment was conducted that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$, the pre-experiment the result is shown in Additional file 1. However, this simple assumption involves great deviation, and the result does not show a great accuracy, which need to be improved in the future.
-
-Link between Aerial and Terrestrial photos.
-
-Some day, the ground is leaned, so the mean height can't reflect the actual height
+% distortion correction
+Also comments the distortion cause, then -> distortion correction 
 
 %1. Distortion correction (height choice is the key)
 %
@@ -493,6 +499,17 @@ Some day, the ground is leaned, so the mean height can't reflect the actual heig
 %
 %    2. (#todo) Two positions to get a precision Z value
 
+\subsection*{Future prospects}
+% 1) for all software
+API for most \acrshort*{sfm} software packages
+
+% 2) 2D Photo to 2D photo without SfM products
+However, this method involves extra workload. A pre-experiment was conducted that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$, the pre-experiment the result is shown in Figure S1 (Additional file 1). However, this simple assumption involves great deviation, and the result does not show a great accuracy, which need to be improved in the future.
+
+% 3) Link between Aerial and Terrestrial photos.
+Some day, the ground is leaned, so the mean height can't reflect the actual height, 1) add height GCP 2) link terrestrial
+
+
 \section*{Conclusions}
 Text
 
@@ -500,9 +517,9 @@ Text
 \begin{itemize}
   \item \textbf{Project name:} EasyRIC
   \item \textbf{Project home page:} https://github.com/HowcanoeWang/EasyRIC
-  \item \textbf{Operating system(s):} Using the source codes as Python package is platform independent, also providing executable software package for windows (windows 10 and 64-bit is tested and recommended).
+  \item \textbf{Operating system(s):} Using the source codes as Python package is platform independent (windows 10 (x64) and Intel CPU with \acrfull*{mkl} support are tested and recommended).
   \item \textbf{Programming language: } Python
-  \item \textbf{Other requirements:} For using source code as package: Python 3.7 or higher, numpy 1.18.1 or higher, scikit-image 0.16.2 or higher; For using executable software packages on Windows, 64-bit windows is required, and Intel CPU (with mkl support) is recommended.
+  \item \textbf{Other requirements:} For using source code as package: Python 3.7 or higher, numpy 1.18.1 or higher, scikit-image 0.16.2 or higher; opencv-python 3.4.2.16 or higher, pyproj 2.6.1.post1, pyparsing 2.0.1 or higher are required, and following pure python packages were included in source code without installation: pyshp, Send2Trash, ezdxf, and plyfile.
   \item \textbf{License:} GPL-3.0
   \item \textbf{Any restrictions to use by non-academics:} Free to use for any purpose, forever.
 \end{itemize}
@@ -565,84 +582,15 @@ The pre-experiment results of transforming \acrfull*{roi} on raw image to other 
 
 \subsection*{Additional file 2: Figure S2}
 % difficult_ground
-Text text text
+The difficult examples for manually marking of expected transformation results. The pond corner or edge are partly or mostly covered by lotus leaves and unable to identify.
 
 \subsection*{Additional file 3: Figure S3}
 % template match
-Text text text
+The deviation correction by template matching. The basic assumptions for this correction includes 1) the package calculated transform position is not too far away from truth value, 2) the region near the \acrfull*{roi} is flat,which means the pattern of ROI object in different images (raw images) will not change significantly from different angle of view. Based on previous assumptions, to avoid the similarity of neighbor plants mismatching, the square sector of ROI on original image (DOM in this case, Figure S3.a) and square sector of transformed package result with 30\% external buffer (Figure S3.b) are clipped out to match rather than matching directly on original images. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                               %%
-%% Figures                       %%
-%%                               %%
-%% NB: this is for captions and  %%
-%% Titles. All graphics must be  %%
-%% submitted separately and NOT  %%
-%% included in the Tex document  %%
-%%                               %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+A pre-experiment about using feature matching (Figure S3.c) failed, the agricultural application involves quantity of similarity key points, the feature matching always miss matched, can not obtain acceptable invariance for both rotation and scale. To solve the rotation and scale invariance, the transform matrix from ROI polygon points in Figure S3.a and ROI polygon points in Figure S3.b was calculated by \textit{opencv.findHomography} function, and applied this transformation on clipped original image sector (Figure S3.a) to Figure S3.d, which share the same scale and rotation with target image sector (Figure S3.b). The transformed new image is used as the template (Figure S3.e) matching pixel by pixel (\textit{scikit-image.feature.match\_template}). The highest similarity position is used for the deviation corrected result (Figure S3.f-g).
 
-%%
-%% Do not use \listoffigures as most will included as separate files
-
-%\section*{Figures}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
-  \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper as example). This step can be separated into 3 parts: (1) the structure from motion (SfM) part which build the sparse tie-point cloud. (2) the multi-view stereo (MVS) photogrammetry part which densify previous sparse tie-point cloud and make geographic corrections. (3) For those defined ground plots, export \acrfull*{dom} and \acrfull*{dsm}. (\textbf{b}) The \acrfull*{roi} maker pipeline via commercial or open source tools. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2). $r_i$ represented camera rotation of image $i$; $p_i$, represented camera position of image $i$; $k_i$ represented 2D pixel coordinates on image $i$; $w$ was sensor width (mm); $f$ was sensor focal length, and $l$ was sensor length (mm). (2) "3D to 2D" part (ROI from point cloud data to raw images). (3) "2.5D to 2D part" (ROI from geographic shapefile to raw images)}
-  \label{fig:workflow}
-\end{figure}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/map.pdf}
-  \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
-  \label{fig:map}
-\end{figure}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/iou.pdf}
-  \caption{The diagram of \acrfull*{iou} calculation. The red polygon is manual marking by LabelMe, the blue polygon is EasyRIC program calculated \acrfull*{roi} on raw images. The purple polygon is the intersection of two results while the gray polygon is the union of them. The IoU equals to the intersection divide by the union.}
-  \label{fig:iou}
-\end{figure}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/dom2grids.pdf}
-  \caption{tbc}
-  \label{fig:dom2girds}
-\end{figure}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/roi2dxm.pdf}
-  \caption{tbc}
-  \label{fig:roi2dxm}
-\end{figure}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/time_series.pdf}
-  \caption{tbc}
-  \label{fig:time}
-\end{figure}
-
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
-  \caption{tbc}
-  \label{fig:dist}
-\end{figure}
-
-\begin{figure}[!htb]
-  %\centering
-  \includegraphics[width=0.95\linewidth]{figures/iou_all.pdf}
-  \caption{tbc}
-  \label{fig:iou_all}
-\end{figure}
+The deviation correction was restrickly limited to flat region. In the lotus case study, it worked as expected only on pond with sparse and flat leaves lay on water surface. For those lotus leaves stretched out of water surface more than 20 cm, the matching results didn't follow the pond edge anymore, instead it follows the movement of top leaf pattern in different angle of view, but also have the possibility of mismatching.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
@@ -679,6 +627,81 @@ Text text text
   }
   \label{tab:diginfo}
 \end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Figures                       %%
+%%                               %%
+%% NB: this is for captions and  %%
+%% Titles. All graphics must be  %%
+%% submitted separately and NOT  %%
+%% included in the Tex document  %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Do not use \listoffigures as most will included as separate files
+
+%\section*{Figures}
+
+\clearpage
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
+  \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper as example). This step can be separated into 3 parts: (1) the structure from motion (SfM) part which build the sparse tie-point cloud. (2) the multi-view stereo (MVS) photogrammetry part which densify previous sparse tie-point cloud and make geographic corrections. (3) For those defined ground plots, export \acrfull*{dom} and \acrfull*{dsm}. (\textbf{b}) The \acrfull*{roi} maker pipeline via commercial or open source tools. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2). $r_i$ represented camera rotation of image $i$; $p_i$, represented camera position of image $i$; $k_i$ represented 2D pixel coordinates on image $i$; $w$ was sensor width (mm); $f$ was sensor focal length, and $l$ was sensor length (mm). (2) "3D to 2D" part (ROI from point cloud data to raw images). (3) "2.5D to 2D part" (ROI from geographic shapefile to raw images)}
+  \label{fig:workflow}
+\end{figure}
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/map.pdf}
+  \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
+  \label{fig:map}
+\end{figure}
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/iou.pdf}
+  \caption{The diagram of \acrfull*{iou} calculation. The red polygon is manual marking by LabelMe, the blue polygon is EasyRIC program calculated \acrfull*{roi} on raw images. The purple polygon is the intersection of two results while the gray polygon is the union of them. The IoU equals to the intersection divide by the union.}
+  \label{fig:iou}
+\end{figure}
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/dom2grids.pdf}
+  \caption{The example for \acrfull*{dom} grid clipping by given size. (\textbf{a}) showed the output geotiff files of clipped girds in windows 10 file management system. (\textbf{b}) showed the saved geotiff files contains the geographic information which can be overlaid the same position over original DOM in QGIS interface. (\textbf{c}) showed the clipping of given ROI according to each grid. (\textbf{d}) for each grid, different ROI sectors could be summarized and save to annotation json file (readable into LabelMe annotation software)}
+  \label{fig:dom2girds}
+\end{figure}
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/roi2dxm.pdf}
+  \caption{The example for \acrfull*{roi} transformation between different \acrfull*{dom}, \acrfull*{pcd} and raw images. (\textbf{a}) showed the ROI marked by QGIS and displayed on DOM. (\textbf{b}) showed the clipped sector of DOM by ROI. (\textbf{c}) showed the ROI on PCD and (\textbf{d}) is the clipped PCD by ROI. (\textbf{e}) showed the ROI transformation results on raw images.}
+  \label{fig:roi2dxm}
+\end{figure}
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/time_series.pdf}
+  \caption{The time-series tracking of ROI, S2E1 plot as example, ranging from May 25 to July 24, 2017.}
+  \label{fig:time}
+\end{figure}
+
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
+  \caption{The effects of Euclidean pixel distance to photo center and ROI height for \acrfull*{iou}, an indicator of ROI transformation precision. All the ideal ROI transformation positions were marked manually on related raw images by LabelMe annotation software. Three plots with different lotus leaf density and height were selected, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, the height of pond edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM. The distribution of each pixel point height is shown in blue area.}
+  \label{fig:dist}
+\end{figure}
+
+\begin{figure}[!htb]
+  %\centering
+  \includegraphics[width=0.95\linewidth]{figures/iou_all.pdf}
+  \caption{The distribution of transformation precision indicators (IoU, precision, recall) for all 112 lotus plots, comparing manually marked and package calculated. For each plot, only those raw images with the smallest Euclidean pixel distance from ROI to image center were selected and manually marked.}
+  \label{fig:iou_all}
+\end{figure}
 
 \end{backmatter}
 
