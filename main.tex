@@ -380,7 +380,7 @@ $$
   \mathbf{R}^{T^{-1}} \cdot Z_1'
   \begin{bmatrix}
     \begin{matrix}
-      \dfrac{x_{1center} - x_{k1}}{f} \\ \dfrac{y_{1center} - y_{k1}}{f} \\ 1
+      \dfrac{c_{x1}- x_{k1}}{f} \\ \dfrac{c_{y2} - y_{k1}}{f} \\ 1
     \end{matrix}
   \end{bmatrix} + T_1
 $$
@@ -396,7 +396,7 @@ After getting 3D coordinate in real world, the 3D ($xyz_{geo}$) to 2D ($xy_{pix}
 
 $$
 \begin{bmatrix}\begin{matrix} x \\ y \\ z\end{matrix}\end{bmatrix}
-= PMat_{3\times4} \cdot 
+= PMatrix_{3\times4} \cdot 
 \left(\begin{bmatrix}\begin{matrix} 
   X_{real} \\ Y_{real} \\ Z_{real} \\ 1
 \end{matrix}\end{bmatrix} 
@@ -449,19 +449,20 @@ For most deep learning frameworks, the original \acrfull*{dom} output of \acrful
 The deep learning training data annotation on original DOM by common digital camera image annotation software. For those small objects, previous clipping method provides a solution that making DOM as common small size digital camera image. For those objects whose size greater than grids, e.g. the plot boundary or field boundary in agricultural application, there is a mature workflow to label polygons on DOM by GIS software. However, the format of GIS software outputs (often *.shp file) could not be used directly as deep learning training data annotation. Also, how to conveniently linking previous large object to previous clipped grid, which needs breaking down (or called intersection) to each grid is another challenge. The EasyRIC also provides a 10 line codes solution for this task. Figure \ref{fig:dom2girds}.c shows how an object cross grids be clipped into each grids, and for the view of each grid, all the annotations beyond this grid could be automatically transferred to LabelMe, an common deep learning training data annotation software, supported json file, and could be imported to deep learning framework directly.
 
 \subsection*{Use case 2: Clipping 3D reconstruction products}
-% also support clipped other 
-
-% save space + easy to analysis
+% show DOM and PCD clipped results
+Though in this study, by limiting the processing quality of medium, the output files did not takes too much space (Table \ref{tab:diginfo}), the  background takes up over 60\% of area (Figure \ref{fig:map}.b) which seldom used for agricultural analysis. By clipping out the \acrfull*{roi} to individual geotiff files with plot names, a plenty of space could be saved, and also helpful for plot-based time-series management and data analysis. Figure \ref{fig:roi2dxm}.a-b shows the example of DOM clipping along given ROI while Figure \ref{fig:roi2dxm}.c-d shows the example of the \acrfull*{pcd} clipping.
 
 % time-series
-Compare \acrshort*{roi} by time series
+After clipping and saving all ROI into sectors, a simple example (plot S2E1) for time-serious traits tracking is shown in Figure \ref{fig:time}. By adding \acrfull*{rtk} \acrfull*{gcp} in the corner of plot (Figure \ref{fig:map}.c), all the time-series image data had an accurate XY plane position, and cultivation pond edge could be linked together without significant deviation (Figure \ref{fig:time} first row). 
 
-In this part, both raw photo? DOM? and point clouds should be displayed? Clipping point clouds may requires Open3D packages, which can not guarantee easy to be packed up.
+When it comes to Z axis, though the height of lotus showed a general trend of increasing, the time 20170531, 20170612, and 20170718 showed an abnormal trend which height is significantly greater than later days. This should be effected by the quality of \acrfull*{sfm} processing. By visual checking, 
 
-Find \acrshort*{roi} in \acrshort*{sfm} products on the raw images
+Some day, the ground is leaned, so the mean height can't reflect the actual height,
 
-text \cite{ma_calculation_2019, guo_illumination_2013}
-should including from DOM(DSM) coordinates (GIS or pixel) and point clouds (3D) coordinates to raw images.
+The common GCP could only provide the calibration for XY plane, hence the 
+
+
+How to evaluate the point cloud quality
 
 \subsection*{Use case 3: Transformation on raw image}
 previous study also use pmatrix, but not like this study so systematically
@@ -475,30 +476,6 @@ previous study also use pmatrix, but not like this study so systematically
 % distortion correction
 Also comments the distortion cause, then -> distortion correction 
 
-%1. Distortion correction (height choice is the key)
-%
-%    1. distortion correction shows here,
-%
-%    2. show some distortion not work
-%
-%    3. then show the projection by dsm, shows the distortion is caused by how height defined
-%
-%    4. Link back to wheat codes and height, shows the height choice depends
-%
-%1. Rotation independent on Point 3D.
-%
-%    1. How to define ground plane, and calculate the distance (height) of each points
-%
-%    2. How to clip points by the ground plane, rather than along z-values
-%
-%    3. (raw2raw) current internal external parameters is highly pre-ground depended , need pmatrix to solve non dependent and improve the performance
-%
-%1. Raw2raw improvement
-%
-%    1. (#todo) Pixel template matching to get a corrected position
-%
-%    2. (#todo) Two positions to get a precision Z value
-
 \subsection*{Future prospects}
 % 1) for all software
 API for most \acrshort*{sfm} software packages
@@ -507,7 +484,7 @@ API for most \acrshort*{sfm} software packages
 However, this method involves extra workload. A pre-experiment was conducted that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$, the pre-experiment the result is shown in Figure S1 (Additional file 1). However, this simple assumption involves great deviation, and the result does not show a great accuracy, which need to be improved in the future.
 
 % 3) Link between Aerial and Terrestrial photos.
-Some day, the ground is leaned, so the mean height can't reflect the actual height, 1) add height GCP 2) link terrestrial
+ 1) add height GCP 2) link terrestrial
 
 
 \section*{Conclusions}
@@ -539,14 +516,26 @@ Text
 \renewcommand*{\glsgroupskip}{}
 \printglossary[type=\acronymtype, title=Abbreviations]
 
-\section*{Competing interests}
-  The authors declare that they have no competing interests.
+\section*{Ethics approval and consent to participate}
+pass
 
-\section*{Author's contributions}
-  Text for this section \ldots
+\section*{Consent for publication}
+pass
+
+\section*{Availability of data and materials}
+pass
+
+\section*{Competing interests}
+pass
+
+\section*{Funding}
+pass
+
+\section*{Authors' contributions}
+pass
 
 \section*{Acknowledgements}
-  Text for this section \ldots
+pass
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
@@ -647,59 +636,56 @@ The deviation correction was restrickly limited to flat region. In the lotus cas
 \clearpage
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
   \caption{The workflow of proposed method. (\textbf{a}) The processing pipeline and output of 3D reconstruction (use Pix4Dmapper as example). This step can be separated into 3 parts: (1) the structure from motion (SfM) part which build the sparse tie-point cloud. (2) the multi-view stereo (MVS) photogrammetry part which densify previous sparse tie-point cloud and make geographic corrections. (3) For those defined ground plots, export \acrfull*{dom} and \acrfull*{dsm}. (\textbf{b}) The \acrfull*{roi} maker pipeline via commercial or open source tools. (\textbf{c}) The processing pipeline for EasyRIC package, (1) "2D to 2D" part (ROI from image 1 to image 2). $r_i$ represented camera rotation of image $i$; $p_i$, represented camera position of image $i$; $k_i$ represented 2D pixel coordinates on image $i$; $w$ was sensor width (mm); $f$ was sensor focal length, and $l$ was sensor length (mm). (2) "3D to 2D" part (ROI from point cloud data to raw images). (3) "2.5D to 2D part" (ROI from geographic shapefile to raw images)}
   \label{fig:workflow}
 \end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/map.pdf}
   \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
   \label{fig:map}
 \end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/iou.pdf}
   \caption{The diagram of \acrfull*{iou} calculation. The red polygon is manual marking by LabelMe, the blue polygon is EasyRIC program calculated \acrfull*{roi} on raw images. The purple polygon is the intersection of two results while the gray polygon is the union of them. The IoU equals to the intersection divide by the union.}
   \label{fig:iou}
 \end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/dom2grids.pdf}
   \caption{The example for \acrfull*{dom} grid clipping by given size. (\textbf{a}) showed the output geotiff files of clipped girds in windows 10 file management system. (\textbf{b}) showed the saved geotiff files contains the geographic information which can be overlaid the same position over original DOM in QGIS interface. (\textbf{c}) showed the clipping of given ROI according to each grid. (\textbf{d}) for each grid, different ROI sectors could be summarized and save to annotation json file (readable into LabelMe annotation software)}
   \label{fig:dom2girds}
 \end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/roi2dxm.pdf}
   \caption{The example for \acrfull*{roi} transformation between different \acrfull*{dom}, \acrfull*{pcd} and raw images. (\textbf{a}) showed the ROI marked by QGIS and displayed on DOM. (\textbf{b}) showed the clipped sector of DOM by ROI. (\textbf{c}) showed the ROI on PCD and (\textbf{d}) is the clipped PCD by ROI. (\textbf{e}) showed the ROI transformation results on raw images.}
   \label{fig:roi2dxm}
 \end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/time_series.pdf}
   \caption{The time-series tracking of ROI, S2E1 plot as example, ranging from May 25 to July 24, 2017.}
   \label{fig:time}
 \end{figure}
 
+\begin{figure}[!htb]
+  \includegraphics[width=0.95\linewidth]{figures/diff_ht.pdf}
+  \caption{The effects of ROI position and ROI height for transformation. (\textbf{a}) shows three different height choices of ROI (5\% percentile, mean, 95\% percentile) by point cloud display. (\textbf{b}) and (\textbf{c})shows two different ROI position on raw images and related ROI transformation results.}
+  \label{fig:ht_diff}
+\end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
-  \caption{The effects of Euclidean pixel distance to photo center and ROI height for \acrfull*{iou}, an indicator of ROI transformation precision. All the ideal ROI transformation positions were marked manually on related raw images by LabelMe annotation software. Three plots with different lotus leaf density and height were selected, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, the height of pond edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM. The distribution of each pixel point height is shown in blue area.}
+  \caption{The transformation precision examine results by fully manual marked plots. Three plots with different lotus leaf density and height were selected. All the expected ROI transformation positions were marked manually on related raw images by LabelMe annotation software. The distance is the Euclidean pixel distance from \acrfull*{iou} center to photo center. The distribution of each pixel point height is shown in blue area, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, and the height of pond edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM.}
   \label{fig:dist}
 \end{figure}
 
 \begin{figure}[!htb]
-  %\centering
   \includegraphics[width=0.95\linewidth]{figures/iou_all.pdf}
-  \caption{The distribution of transformation precision indicators (IoU, precision, recall) for all 112 lotus plots, comparing manually marked and package calculated. For each plot, only those raw images with the smallest Euclidean pixel distance from ROI to image center were selected and manually marked.}
+  \caption{The distribution of transformation precision indicators for central manual marked of all 112 lotus plots. For each plot, only those raw images with the smallest Euclidean pixel distance from ROI to image center were selected and manually marked.}
   \label{fig:iou_all}
 \end{figure}
 
