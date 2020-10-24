@@ -163,7 +163,7 @@
 
 \begin{abstract}
 \parttitle{Background} 
-Applying high-throughput phenotyping technologies in agriculture provides an advanced and efficient method for managing and breeding crops in practical applications. Compared with device-specified remote sensing technologies (laser scanning, \acrfull*{lidar}, etc.), \acrfull*{sfm}, applicable to price friendly RGB digital cameras, has been widely spread use around the world, and many commercial and open-source software are available to implement this task. However, producing good quality of its products, such as \acrfull*{dom}, \acrfull*{dsm}, and point clouds, is quite computation intensive and hard to meet the same precision of original photos. Hence, linking low computation time produced low quality \acrshort*{sfm} products back to original digital images has significant potential to improve the efficiency and precision for data processing, but to the best of our knowledge, no easy-to-use open source tool is available for this object.
+Applying high-throughput phenotyping technologies in agriculture provides an advanced and efficient method for managing and breeding crops in practical applications. Compared with device-specified remote sensing technologies (laser scanning, \acrfull*{lidar}, etc.), \acrfull*{sfm}, applicable to price friendly RGB digital cameras, has been widely spread use around the world, and many commercial and open-source software are available to implement this task. However, producing good quality of its products, such as \acrfull*{dom}, \acrfull*{dsm}, and point clouds, is quite computation intensive and hard to meet the same accuracy of original photos. Hence, linking low computation time produced low quality \acrshort*{sfm} products back to original digital images has significant potential to improve the efficiency and accuracy for data processing, but to the best of our knowledge, no easy-to-use open source tool is available for this object.
 
 \parttitle{Results}
 In this study, a pure python package called EasyRIC (easy reconstruction image converter) was developed to link original photos to \acrshort*{sfm} products. The Lotus (\textit{Nelumbo nucifera}) breeding field were used as a show case to demonstrate the following functions: 1) Clipping the \acrfull*{roi} from point clouds and compare them through time series. 2) Clipping the \acrshort*{roi} from \acrshort*{sfm} products to raw images. 3) Generate bunch of training data in raw images from a few manual marked \acrshort*{roi}.
@@ -225,11 +225,17 @@ Para3: SfM background, \textbf{algorithm}, and software (computation intensive d
 
 Para4: Data processing (the difficulties to of use the result of SfM, e.g. 1) low quality of DOM make canopy cover, organ detection. -> link to raw image; 2) 3D analysis not easy (require large RAM and good computation to processing point cloud, and the quality of point cloud couldn't too large -> 3D to 2d, 3D clipping, there is no common tool to make this transfer easy)
 
+% maybe useful, add citations to this paragraph. 
+Using 3D reconstruction by images collected from price friendly digital camera or drones to build plant geometry models and extract traits based on the outputs is a hot topic in agriculture phenotyping studies in recent years. Many of them paid full attention to the traits calculation algorithms, assuming the default setting of \acrshort*{sfm} software could produce trustable outputs, and the evaluation are mainly based on the comparison between the traits measured in field and those calculated by algorithms from 3D reconstruction outputs. 
+
 Para5: 4D time series analysis demand and point cloud clipping
+see \cite{han_clustering_2018} or search "time-series" in Zotero.
 
 Para6: Training Data crisis
 
 Para7: Objectives
+
+extra: previous studies \cite{duan_comparison_2017, tresch_easy_2019} also called reverse calculation, but never integrate them into an widely applicable tools. previous study also use pmatrix, but not like this study so systematically
 
 \section*{Implementation}
 
@@ -256,7 +262,7 @@ For the MVS stage (Figure \ref{fig:workflow}.b-2), which produces 3D \acrfull*{p
 For the GIS stage (Figure \ref{fig:workflow}.b-3), which requires obtaining 2D geographic coordinates on DOM and DSM, common \acrfull*{gis} processing software including QGIS (open source) or ArcMap (commercial) can be used to produce required polygon shapefiles (*.shp). The produced shp file can be used as the input for EasyRIC package.
 
 \subsection*{Package Algorithms}
-The EasyRIC is a python package without any \acrfull*{gui}, please refer to the document \url{https://www.to.be.continued.org} for detailed package usage. Instead of introducing how the package is used, this section demonstrate how the calculation algorithm implemented.
+The EasyRIC is a python package without any \acrfull*{gui}, please refer to the package documentation for detailed usage. Instead of introducing how the package is used, this section demonstrate how the calculation algorithm implemented.
 
 \subsubsection*{Input and output files}
 % supported file types
@@ -422,7 +428,7 @@ The DJI FC550 drone (VC Technology, UK) was used to acquire images, the flight h
 After processing all flight time and getting DOM and DSM, the QGIS was used to marking and exporting plot boundary polygons and their id on the map.
 
 \subsubsection*{Height calculation}
-In this case study, after clipping out the \acrfull*{roi} of each pond, two heights are calculated. The one is the 5 percentile mean height, equals to the mean value of all point heights which smaller that 5 percentile threshold, used for catching the height of water surface to define the height of ROI. The other is the 95 percentile mean height, equals to the mean value of all point heights which bigger than 95 percentile threshold, used for catching the top of lotus minus ground mean height to get the lotus height.
+In this case study, after clipping out the \acrfull*{roi} of each pond, two heights are calculated. The one is the 5 percentile mean z value ($mean(Z_{p5})$), equals to the mean z values of all the points smaller that 5 percentile threshold, used for catching the elevation (height) of water surface to define the z value of ROI. The other is the 95 percentile mean z value ($mean(Z_{p95})$), equals to the mean of all point z values which bigger than 95 percentile threshold, used for catching the top of lotus leaves. Also, a ground region was selected manually (The middle corridor in Figure \ref{fig:map}.b where scale bar placed), the mean Z value of this region ($mean(Z)_{ground}$) was used as the ground elevation. The lotus height equals to $mean(Z_{p95}) - mean(Z)_{ground}$.
 
 \subsubsection*{Performance evaluation}
 To determine how the transformation performs and what contributes the deviation, the manually determined ideal transformation results made by LabelMe annotation software were used to compare with EasyRIC results. Three indicators, \acrfull*{iou} performance criterion \cite{everingham_pascal_2010}, precision, and recall, were used to evaluate the similarity between package output and manual marking, and can be calculated by (Figure \ref{fig:iou}): 
@@ -453,42 +459,31 @@ The deep learning training data annotation on original DOM by common digital cam
 Though in this study, by limiting the processing quality of medium, the output files did not takes too much space (Table \ref{tab:diginfo}), the  background takes up over 60\% of area (Figure \ref{fig:map}.b) which seldom used for agricultural analysis. By clipping out the \acrfull*{roi} to individual geotiff files with plot names, a plenty of space could be saved, and also helpful for plot-based time-series management and data analysis. Figure \ref{fig:roi2dxm}.a-b shows the example of DOM clipping along given ROI while Figure \ref{fig:roi2dxm}.c-d shows the example of the \acrfull*{pcd} clipping.
 
 % time-series
-After clipping and saving all ROI into sectors, a simple example (plot S2E1) for time-serious traits tracking is shown in Figure \ref{fig:time}. By adding \acrfull*{rtk} \acrfull*{gcp} in the corner of plot (Figure \ref{fig:map}.c), all the time-series image data had an accurate XY plane position, and cultivation pond edge could be linked together without significant deviation (Figure \ref{fig:time} first row). 
+After clipping and saving all ROI into sectors, a simple example (plot S2E1) for time-serious traits tracking is shown in Figure \ref{fig:time}. By adding \acrfull*{rtk} \acrfull*{gcp} in the corner of plot (Figure \ref{fig:map}.c), the image XY plane had been calibrated to the same position through timeline, reflected by the cultivation pond edges being linked together without significant deviation (Figure \ref{fig:time} first row). 
 
-When it comes to Z axis, though the height of lotus showed a general trend of increasing, the time 20170531, 20170612, and 20170718 showed an abnormal trend which height is significantly greater than later days. This should be effected by the quality of \acrfull*{sfm} processing. By visual checking, 
+When it comes to Z axis, though the height of lotus showed a general trend of increasing, the time 20170531, 20170612, and 20170718 showed an abnormal trend which height is significantly greater than later days. This should be effected by the quality of \acrfull*{sfm} processing. By visual checking, in these days, the 3D reconstructed ground had slightly leaned from west to east, making the $mean(Z)_{ground}$ wasn't the actual ground height near that pond and caused this abnormal height. What's more, the z value (elevation) of each time did not be calibrated the same as XY plane, hence the $mean(Z)_ground$ variate differently along the timeline, the deviation could reach 0.3 m which is unacceptable compared with crop height. In the future, the \acrshort*{gcp} for z axis should also taking into consideration, for example, a visible box or pole could be set in the field. How to evaluating the quality of 3D reconstruction and the adjustment for the 3D reconstruction workflow to fit the characteristic of agricultural should also be conducted.
 
-Some day, the ground is leaned, so the mean height can't reflect the actual height,
+\subsection*{Use case 3: Transformation ROI on raw images}
+% why reverse calculation: the resolution problem
+Though the \acrfull*{sfm} software provide options for the quality (density) of MVS stage, the highest quality could provide a ultra high resolution of outputs. However, this processing is unacceptable computation intensive and time consuming for high-throughput agriculture, meanwhile, a study showed the ground coverage estimated from DOM is greater than that from raw images took over 79\% of plots due to the ghosting effects caused by wind and cloud \cite{duan_comparison_2017}. For 2D traits analysis, e.g. ground coverage, leaf projection area, or object detection, marking \acrfull*{roi} on fast produced low quality DOM and linking them back to raw images could save a plenty of time without losing the accuracy, this technique named ROI transformation in this study, or called reverse calculation in previous studies \cite{duan_comparison_2017,tresch_easy_2019}. The demo of ROI transformation from DOM and PCD on some raw images is shown in Figure \ref{fig:roi2dxm}.e.
 
-The common GCP could only provide the calibration for XY plane, hence the 
-
-
-How to evaluate the point cloud quality
-
-\subsection*{Use case 3: Transformation on raw image}
-previous study also use pmatrix, but not like this study so systematically
 % how it performs (IoU accuracy analysis)
+The results of performance evaluation is shown in Figure \ref{fig:dist}. For pond N2W5 and S2W4, most the IoU values are over 90\%, surprisingly, for the most simple and sparse pond N3E6, though the IoU values are greater than 75\%, the performance is moderate. The reason is the ROI z value (elevation, $mean(Z_{p5})$) automatic calculation. For manually marking, the reference is the edge of pond, which means the manual ROI elevation is the pond edge (the blue broken line in the second row of Figure \ref{fig:dist}), while the elevation auto-selected is the red solid line in Figure \ref{fig:dist}. The plot N3E6 had almost 25 cm differences between two elevations, mainly caused by the transparent water, the 3D reconstruction build the bed mud rather than water surface for this pond. This shows the ROI height selection is of great importance for the transform accuracy. Another trend in this figure is the IoU decreasing with the distance from ROI center to photo center increasing. It means the position of ROI on raw images (the view angle where taking raw photo) also reflect the transform accuracy. 
 
-% the resolution problem
+Figure \ref{fig:ht_diff} shows how the ROI elevation selection and ROI position on raw images effects transformation accuracy. Three different heights (bottom $mean(Z_{p5})$, middle $mean(Z)$, and top $mean(Z_{p95})$) were selected as ROI elevation respectively (Figure \ref{fig:ht_diff}.a), on different images, the deviation variate. The closer to the raw image center, the less effects of height selection, which is highly related to the view angle effects. And previous Figure \ref{fig:dist} also shows, once the pixel distance to image center smaller than 800 pixels (size of image is 4608$\times$3456 pixels), the moderate performance pond N3E6 could achieve IoU greater than 90\%. Hence, to minimize the effects of unsuitable ROI elevation selection, it is recommended to choose raw images where the ROI locates in the center as first priority. Based on this finding, for all 112 ponds, the minimum distance raw image of each pond were selected and marked expected ROI manually, the distribution of accuracy indicators is shown in Figure \ref{fig:iou_all}, the peaks are around 98\% while
+the minimum value still greater than 90\%. Considering the difficulties in manual marking in some pond where all corners are covered by leaves and unidentical (See Additional file 1, Figure S1), the ROI transformation accuracy has been validated acceptable.
+
+% distortion correction for those still not good after choosing 
+The EasyRIC package also provide a computer vision based distortion correction method (Additional file 2, Figure S2), the condition to using this algorithm strictly limited to the flat region. In the lotus case study, it worked as expected only on pond with sparse and flat leaves lay on water surface. For those lotus leaves stretched out of water surface more than 20 cm, the matching results didn't follow the pond edge anymore, instead it follows the movement of top leaf pattern in different angle of view, but also have the high possibility of mismatching.
 
 % efficient annotation of training data for ML/DL
-3D/2.5D small region -> 2D->Raw small region, selecting strategy for efficient annotation of training data for ML/DL.
-
-% distortion correction
-Also comments the distortion cause, then -> distortion correction 
+Finally, this ROI transformation on raw image has the potential contribute to another deep learning training data pain point, data augmentation. Most of deep learning framework require at least thousands of training images to avoid overfitting and ensure the versatility of model, while annotating such number of training data is labor intensive. The data augmentation was proposed to decrease the workload of annotation by linear transformation such as rotating, zooming or flipping on annotated images, and applied in many agriculture deep learning studies \cite{han_real-time_2020, zhou_fast_2020}. However, this image processing based data augmentation cannot exceed the photo collected from different view angles in real world. Hence, Beck et al., proposed an automatic indoor robotic annotation system \cite{beck_embedded_2020} to collect natural augmented crop training data in agriculture. However, to the best of our knowledge, there is no annotation data collecting system for open field. The image collected for 3D reconstruction naturally contains different view angle (rotation in 3D), different height (scale zoom), and different environment condition (light, cloud shadow, wind shake, soil color of different wetness), but the difficulties to identify each plant and link with annotation makes this great potential being ignored, which can be easily solved by the ROI transformation function in EasyRIC package.
 
 \subsection*{Future prospects}
-% 1) for all software
-API for most \acrshort*{sfm} software packages
-
-% 2) 2D Photo to 2D photo without SfM products
-However, this method involves extra workload. A pre-experiment was conducted that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$, the pre-experiment the result is shown in Figure S1 (Additional file 1). However, this simple assumption involves great deviation, and the result does not show a great accuracy, which need to be improved in the future.
-
-% 3) Link between Aerial and Terrestrial photos.
- 1) add height GCP 2) link terrestrial
-
+The EasyRIC package correctly is just a pre-release and still under construction, and there are many prospects could be added and modified: 1) All the functions mentioned before were only developed and tested under the outputs of Pix4Dmapper, another famous commercial software Agisoft Metashape hasn't been adapted yet as well as other open-source software. 2) Though mentioned in Implementation part, the SfM stage also provide the possibility to convert ROI on one raw image to another raw image, a pre-experiment (Additional file 3, Figure S3) showed that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$ involves great deviation and unacceptable low accuracy, which need to be improved in the future by reverting PMatrix or distortion correction. 3) though add Z axis control points helps for the height calibration, integrating terrestrial camera as well as aerial drone also improves the height accuracy. How to mix two different camera type and route to do 3D reconstruction and fitting EasyRIC under this circumstance still need to be studies. 4) Compared with perspective lens camera which has limited sight angle, the hemispherical (fisheye) and spherical camera could record full surrounding information with one shot, which would greatly improve image data collection efficiency. How to using those severely distorted camera for 3D reconstruction and apply full EasyRIC functions on them should be taken into consideration.
 
 \section*{Conclusions}
-Text
+The 3D reconstruction by \acrfull*{sfm} has been widely spread use in agricultural phenotyping studies, however, the SfM-MVS products, including \acrfull*{dom}, \acrfull*{dsm}, and \acrfull*{pcd} are often been processed individually. And the potential of raw images which contains tremendous first hand information are often ignored. In this study, a python package called EasyRIC is proposed to linking annotations among those raw images and SfM-MVS outputs, and provides services of: 1) preparing DOM and annotations to deep learning framework acceptable file type and size, 2) segmenting SfM-MVS products into plot or \acrfull*{roi} sectors for optimized data management and time-series analysis, 3) linking original resolution raw images to decrease the computation workload of SfM-MVS products to meet the demand of 2D high-throughput phenotyping, and 4) using raw images as deep learning training data augmentation with labor saving automatic pipeline. The accuracy of previous transformation has been validated with manually marked references, and the impact factors for the accuracy have been discussed. Further applications of adapting more SfM-MVS software, improving deviation corrections, integrating mixed type of camera as well as spherical lens cameras should be developed in the future.
 
 \section*{Availability and requirements}
 \begin{itemize}
@@ -535,7 +530,7 @@ pass
 pass
 
 \section*{Acknowledgements}
-pass
+pass thanks Yulin Duan for coming out the idea of DOM clipping?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
@@ -566,20 +561,17 @@ pass
 % File format including the correct file extension for example .pdf, .xls, .txt, .pptx (including name and a URL of an appropriate viewer if format is unusual)
 % Title of data
 % Description of data
-\subsection*{Additional file 1: Figure S1}
-The pre-experiment results of transforming \acrfull*{roi} on raw image to other raw images, assuming the camera height as missing Z values. (a) is the image where ROI marked. (b)-(e) shows some of ROI transform results. 
 
-\subsection*{Additional file 2: Figure S2}
+\subsection*{Additional file 1: Figure S1}
 % difficult_ground
 The difficult examples for manually marking of expected transformation results. The pond corner or edge are partly or mostly covered by lotus leaves and unable to identify.
 
-\subsection*{Additional file 3: Figure S3}
+\subsection*{Additional file 2: Figure S2}
 % template match
-The deviation correction by template matching. The basic assumptions for this correction includes 1) the package calculated transform position is not too far away from truth value, 2) the region near the \acrfull*{roi} is flat,which means the pattern of ROI object in different images (raw images) will not change significantly from different angle of view. Based on previous assumptions, to avoid the similarity of neighbor plants mismatching, the square sector of ROI on original image (DOM in this case, Figure S3.a) and square sector of transformed package result with 30\% external buffer (Figure S3.b) are clipped out to match rather than matching directly on original images. 
+The deviation correction by template matching. The basic assumptions for this correction includes 1) the package calculated transform position is not too far away from truth value, 2) the region near the \acrfull*{roi} is flat,which means the pattern of ROI object in different images (raw images) will not change significantly from different angle of view. Based on previous assumptions, to avoid the similarity of neighbor plants mismatching, the square sector of ROI on original image (DOM in this case, Figure S3.a) and square sector of transformed package result with 30\% external buffer (Figure S3.b) are clipped out to match rather than matching directly on original images. A pre-experiment about using feature matching (Figure S3.c) failed, the agricultural application involves quantity of similarity key points, the feature matching always miss matched, can not obtain acceptable invariance for both rotation and scale. To solve the rotation and scale invariance, the transform matrix from ROI polygon points in Figure S3.a and ROI polygon points in Figure S3.b was calculated by \textit{opencv.findHomography} function, and applied this transformation on clipped original image sector (Figure S3.a) to Figure S3.d, which share the same scale and rotation with target image sector (Figure S3.b). The transformed new image is used as the template (Figure S3.e) matching pixel by pixel (\textit{scikit-image.feature.match\_template}). The highest similarity position is used for the deviation corrected result (Figure S3.f-g).
 
-A pre-experiment about using feature matching (Figure S3.c) failed, the agricultural application involves quantity of similarity key points, the feature matching always miss matched, can not obtain acceptable invariance for both rotation and scale. To solve the rotation and scale invariance, the transform matrix from ROI polygon points in Figure S3.a and ROI polygon points in Figure S3.b was calculated by \textit{opencv.findHomography} function, and applied this transformation on clipped original image sector (Figure S3.a) to Figure S3.d, which share the same scale and rotation with target image sector (Figure S3.b). The transformed new image is used as the template (Figure S3.e) matching pixel by pixel (\textit{scikit-image.feature.match\_template}). The highest similarity position is used for the deviation corrected result (Figure S3.f-g).
-
-The deviation correction was restrickly limited to flat region. In the lotus case study, it worked as expected only on pond with sparse and flat leaves lay on water surface. For those lotus leaves stretched out of water surface more than 20 cm, the matching results didn't follow the pond edge anymore, instead it follows the movement of top leaf pattern in different angle of view, but also have the possibility of mismatching.
+\subsection*{Additional file 3: Figure S3}
+The pre-experiment results of transforming \acrfull*{roi} on raw image to other raw images, assuming the camera height as missing Z values. (a) is the image where ROI marked. (b)-(e) shows some of ROI transform results. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
@@ -672,20 +664,20 @@ The deviation correction was restrickly limited to flat region. In the lotus cas
 \end{figure}
 
 \begin{figure}[!htb]
+  \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
+  \caption{The transformation accuracy examine results by fully manual marked plots. Three plots with different lotus leaf density and height were selected. All the expected ROI transformation positions were marked manually on related raw images by LabelMe annotation software. The distance is the Euclidean pixel distance from \acrfull*{iou} center to photo center. The distribution of each pixel point height is shown in blue area, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, and the height of pond edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM.}
+  \label{fig:dist}
+\end{figure}
+
+\begin{figure}[!htb]
   \includegraphics[width=0.95\linewidth]{figures/diff_ht.pdf}
   \caption{The effects of ROI position and ROI height for transformation. (\textbf{a}) shows three different height choices of ROI (5\% percentile, mean, 95\% percentile) by point cloud display. (\textbf{b}) and (\textbf{c})shows two different ROI position on raw images and related ROI transformation results.}
   \label{fig:ht_diff}
 \end{figure}
 
 \begin{figure}[!htb]
-  \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
-  \caption{The transformation precision examine results by fully manual marked plots. Three plots with different lotus leaf density and height were selected. All the expected ROI transformation positions were marked manually on related raw images by LabelMe annotation software. The distance is the Euclidean pixel distance from \acrfull*{iou} center to photo center. The distribution of each pixel point height is shown in blue area, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, and the height of pond edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM.}
-  \label{fig:dist}
-\end{figure}
-
-\begin{figure}[!htb]
   \includegraphics[width=0.95\linewidth]{figures/iou_all.pdf}
-  \caption{The distribution of transformation precision indicators for central manual marked of all 112 lotus plots. For each plot, only those raw images with the smallest Euclidean pixel distance from ROI to image center were selected and manually marked.}
+  \caption{The distribution of transformation accuracy indicators for central manual marked of all 112 lotus plots. For each plot, only those raw images with the smallest Euclidean pixel distance from ROI to image center were selected and manually marked.}
   \label{fig:iou_all}
 \end{figure}
 
