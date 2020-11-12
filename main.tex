@@ -7,7 +7,7 @@
 %%% loading packages, author definitions
 
 %\documentclass[twocolumn]{bmcart}% uncomment this for twocolumn layout and comment line below
-\documentclass{configs/bmcart}
+\documentclass[doublespacing]{configs/bmcart}
 
 %%% Load packages
 %\usepackage{amsthm,amsmath}
@@ -28,6 +28,9 @@
 }
 \usepackage{url}
 \usepackage{amsmath} % small matrix package
+\usepackage[left]{lineno} % linenumbers
+\linenumbers
+
 \usepackage[acronym]{glossaries}
 
 %\makenoidxglossaries
@@ -265,9 +268,11 @@ In the geometry between image and real world, there are three coordinates, the f
 As shown in Figure \ref{fig:geom}.a, assume a point $K(X,Y,Z)$ in real world coordinate ($xyz_{geo}$) is recorded as $k_2$ in image $raw_2$ by camera. For internal parameters, $w$ and $l$ represents the camera sensor width (horizontal) and length (vertical) in mm, respectively, and $f$ is camera focal length in mm. For external camera parameters, the camera rotation and position are recorded by $r_i (\omega_i, \varphi_i, \kappa_i)$ \cite{pix4d_support_yaw_2020} and $P_i (Px_{i}, Py_{i}, Pz_{i})$. The rotation matrix ($\mathbf{R}_i$) of camera parameters 
 can be calculated by \cite{pix4d_support_how_2020}, or for Pix4D, can be loaded from \textit{calibrated\_camera\_parameters.txt} file:
 
-\begin{align}
-  \mathbf{R}_i & = \mathbf{R}_{x_i}(\omega_i) \mathbf{R}_{y_i}(\varphi_i) \mathbf{R}_{z_i}(\kappa_i) \nonumber\\
-  & =
+$$
+\begin{array}{lll}
+  \mathbf{R}_i & = & \mathbf{R}_{x_i}(\omega_i) \mathbf{R}_{y_i}(\varphi_i) \mathbf{R}_{z_i}(\kappa_i) \nonumber \\
+  & = &
+    \begin{small}
     \left[ 
       % amsmath package is required
       \begin{matrix} 
@@ -289,7 +294,9 @@ can be calculated by \cite{pix4d_support_how_2020}, or for Pix4D, can be loaded 
         sin(\kappa_i) & cos(\kappa_i)  & 0 \\
         0             & 0              & 1
       \end{matrix} 
-    \right] \nonumber %\\
+    \right] 
+    \end{small}
+    %\nonumber %\\
   %& = 
   %  \left[ 
   %    \begin{matrix} 
@@ -306,12 +313,12 @@ can be calculated by \cite{pix4d_support_how_2020}, or for Pix4D, can be loaded 
   %        & cos(\omega_I)cos(\varphi_i)
   %    \end{matrix} 
   %  \right] 
-\end{align}
+\end{array}
+$$
 
 When using camera location $P_i$ as coordinate origin (Figure \ref{fig:geom}.b), the new coordinate $K'_2$ of real world point $K$ could be transformed by \cite{pix4d_support_how_2020}:
 
-\begin{align}
-\label{eq:ki'}
+\begin{equation} \label{eq:ki'}
 K'_i = 
   \left[
     \begin{array}{c} X'_i \\ Y'_i \\ Z'_i \end{array} 
@@ -324,17 +331,18 @@ K'_i =
     \left[\begin{matrix} X \\ Y \\ Z \end{matrix}\right] - 
     \left[\begin{matrix} Px_i \\ Py_i \\ Pz_i \end{matrix}\right]
   \right)
-\end{align}
+\end{equation}
 
 And projecting $K'_2$ to image coordinate $k_2 (x_{k_2}, y_{k_2})$ in follows \cite{pix4d_support_how_2020} (Figure \ref{fig:geom}.c):
 
-\begin{align}
-  \label{eq:xyz'}
-  \begin{cases}
-    x_{k_i} = - f \cdot \dfrac{X'_i}{Z'_i} + c_{x_i} \\
-    y_{k_i} = - f \cdot \dfrac{Y'_i}{Z'_i} + c_{y_i}
-  \end{cases}
-\end{align}
+\begin{equation}  \label{eq:xyz'}
+  \left\{
+  \begin{matrix}
+    x_{k_i}  & = & - f \cdot \dfrac{X'_i}{Z'_i} + c_{x_i} \\
+    y_{k_i}  & = & - f \cdot \dfrac{Y'_i}{Z'_i} + c_{y_i}
+  \end{matrix}
+  \right.
+\end{equation}
 
 where $c_x$ and $c_y$ is the image center in pixel (Figure \ref{fig:geom}.b), width (horizontal) and length (vertical), respectively. 
 
@@ -520,10 +528,11 @@ The 3D reconstruction by \acrshort*{sfm} has been widely spread use in plant phe
 We would thank aaa from ? Institude for lotus pond management, and bbb from ??? for field image data collection? We thank Yulin Duan and Yun Shi from the Chinese Academic of Agriculture for coming out the idea of DOM clipping and annotation transformation.
 
 \section*{Authors' contributions}
-W. Guo designed the research. H. Wang developed the program and wrote the manuscript. ccc reversed the manuscript. All authors read and approved the final manuscript.
+HW and WG conceived the ideas and designed methodology; WG collected UAV images, HW analyzed the data with the input of WG; All authors discussed, wrote the manuscript, and gave final approval for publication.
+
 
 \section*{Funding}
-The work was supported by ????.
+This study was partially funded by the JST CREST Program JPMJCR16O2, JPMJCR1601, JPMJCR1603, JPMJCR1512, SICORP Program JPMJSC16H2 and aXis program JPMJAS2018.
 
 \section*{Ethics approval and consent to participate}
 Not applicable.
