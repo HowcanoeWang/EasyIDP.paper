@@ -160,10 +160,10 @@
 
 \begin{abstract}
 \parttitle{Background} 
-Applying 3D based high-throughput phenotyping in agriculture provides an advanced and efficient method for managing and monitoring crops. The \acrfull*{sfm}, applicable to common RGB digital cameras, has been widely used to implement this task. However, analyzing its outputs, including \acrfull*{dom}, \acrfull*{dsm}, and \acrfull*{pcd}, for plant phenotyping, requires several preprocessing steps, and currently there is no easy-to-use tool to meet this requirement.
+Applying 3D based high-throughput phenotyping in agriculture provides an advanced and efficient method for managing and monitoring crops. The \acrfull*{sfm}, applicable to common RGB digital cameras, has been widely used to implement this task by many commercial and open-source tools. However, analyzing its outputs, including \acrfull*{dom}, \acrfull*{dsm}, and \acrfull*{pcd}, for high-throughput plant phenotyping, requires several preprocessing steps, such as \acrfull*{roi} extraction,  plot segmentation, or object detection. Currently, there is no easy-to-use tool to meet this requirement.
 
 \parttitle{Results}
-In this study, a pure python package called EasyRIC (easy reconstruction image converter) was developed to link the outputs of \acrshort*{sfm} products with original photos. The Lotus (\textit{Nelumbo nucifera}) breeding field were used to demonstrate the following points: 1) clipping \acrshort*{sfm} products to small parts (sectors) according to given plot boundary or \acrshort*{roi}. 2) transforming ROI on the \acrshort*{sfm} products to high quality raw images. 3) evaluating the accuracy of previous transformation by manual annotation.
+In this study, a pure python package called EasyRIC (easy reconstruction image converter) was developed to link the outputs of \acrshort*{sfm} products with original photos. The Lotus (\textit{Nelumbo nucifera}) breeding field were used to demonstrate the following points: 1) clipping (segmenting) \acrshort*{sfm} products according to given plot boundary or \acrshort*{roi}. 2) transforming ROI on the \acrshort*{sfm} products to high quality raw images to assist object detection. 3) evaluating the accuracy of previous transformation by manual annotation.
 
 \parttitle{Conclusions}
 This method shows an acceptable accuracy and potential to preprocess those outputs of \acrshort*{sfm}. The suggestions for better reverse calculation have been discussed. Also, some potential applications for deep learning have also been proposed.
