@@ -1,3 +1,3 @@
-# \[PlantMethod] EasyRIC Reverse Calculation Paper LaTeX Project
+# \[PlantMethod] EasyIDP Paper LaTeX Project
 
 Based on the Overleaf Complier
