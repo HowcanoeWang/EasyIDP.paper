@@ -107,13 +107,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \author[
-   addressref={aff1},
-   %email={haozhou-wang@g.ecc.u-tokyo.ac.jp}
+  addressref={isas}
+  %email={haozhou-wang@g.ecc.u-tokyo.ac.jp}
 ]{\inits{HW}\fnm{Haozhou} \snm{Wang}}
 \author[
-   addressref={aff1},
-   corref={aff1}, 
-   email={guowei@g.ecc.u-tokyo.ac.jp}
+  addressref={minarg, caas}
+]{\inits{YD}\fnm{Yulin} \snm{Duan}}
+\author[
+  addressref={minarg, caas}
+]{\inits{YS}\fnm{Yun} \snm{Shi}}
+\author[
+  addressref={isas, plp}
+]{\inits{YK}\fnm{Yoichiro} \snm{Kato}}
+\author[
+  addressref={isas, nau}
+]{\inits{SN}\fnm{Seish} \snm{Ninomiya}}
+\author[
+  addressref={isas},
+  corref={isas}, 
+  email={guowei@g.ecc.u-tokyo.ac.jp}
 ]{\inits{WG}\fnm{Wei} \snm{Guo}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -125,11 +137,34 @@
 %%                                          %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\address[id=aff1]{
+\address[id=isas]{
   \orgname{International Field Phenomics Research Laboratory, Institute for Sustainable Agro-ecosystem Services, Graduate School of Agricultural and Life Science, The University of Tokyo}, 
   \postcode{188-0002} 
   \city{Tokyo}, 
   \cny{Japan}
+}
+\address[id=minarg]{
+  \orgname{Key Laboratory of Agricultural Remote Sensing, Ministry of Agriculture},
+  \postcode{100081},
+  \city{Beijing},
+  \cny{China}
+}
+\address[id=caas]{
+  \orgname{Institute of Agricultural Resources and Regional Planning, Chinese Academy of Agricultural Sciences},
+  \postcode{100081},
+  \city{Beijing},
+  \cny{China}
+}
+\address[id=plp]{
+  \orgname{International Rice Research Institute},
+  \city{Metro Manila},
+  \cny{the Philippines}
+}
+\address[id=nau]{
+  \orgname{Plant Phenomics Research Center, Jiangsu Collaborative Innovation Center for Modern Crop Production,Nanjing Agricultural University},
+  \postcode{210095},
+  \city{Nanjing},
+  \cny{China}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,13 +198,13 @@
 
 \begin{abstract}
 \parttitle{Background} 
-Applying 3D based high-throughput phenotyping in agriculture provides an advanced and efficient method for managing and monitoring crops. The \acrfull*{sfm}, applicable to common RGB digital cameras, has been widely used and can be implemented by many commercial and open-source tools. By using such tools, several outputs like \acrfull*{dom}, \acrfull*{dsm}, and \acrfull*{pcd} can be generated. However, there is a gap from these outputs to plant phenotyping, especially 3D based. For example, the plant height calculation and its accuracy depend on referring correspond position of DSM or PCD and their qualities, and calculating canopy ground cover needs organ detection based on raw image quality. These intermediate processing is time-consuming but no easy-to-use tools available to the best of our knowledge. 
+The 3D based high-throughput phenotyping makes the task of managing and monitoring crops more efficient. The \acrfull*{sfm}, applicable to common RGB digital cameras, has been widely used and can be implemented by many commercial and open-source tools. By using such tools, several outputs like \acrfull*{dom}, \acrfull*{dsm}, and \acrfull*{pcd} can be generated. However, there is a gap from these outputs to 3D plant phenotyping. For example, calculating plant height and canopy ground cover requires the segmentation of each plot from whole DOM or DSM or original images. These intermediate processing is time-consuming but no easy-to-use tools are available to the best of our knowledge. 
 
 \parttitle{Results}
-In this study, a pure python package called EasyIDP (easy intermediate data processor) was developed to link the outputs of \acrshort*{sfm} products with 3D based plant phenotyping. A Lotus (\textit{Nelumbo nucifera}) breeding field was used to demonstrate the following points: 1) clipping (segmenting) \acrshort*{sfm} products according to given plot boundary or \acrshort*{roi}. 2) transforming ROI on the \acrshort*{sfm} products to high quality raw images to assist object detection. 3) evaluating the accuracy of previous transformation by manual annotation.
+In this study, a software package called EasyIDP (easy intermediate data processor) was developed to link the outputs of \acrshort*{sfm} products with 3D based plant phenotyping. A Lotus (\textit{Nelumbo nucifera}) breeding field was used to demonstrate the following points: 1) clipping (segmenting) \acrshort*{sfm} products according to given plot boundary or \acrfull*{roi}. 2) transforming \acrshort*{roi} on the \acrshort*{sfm} products to high quality raw images to assist object detection. 3) evaluating the accuracy of previous transformation by manual annotation.
 
 \parttitle{Conclusions}
-This intermediate data processing tool shows an acceptable accuracy and potential to process those outputs of \acrshort*{sfm}. By using the EasyIDP, a bridge between \acrshort*{sfm} software outputs and plant phenotyping could be built conveniently.
+The proposed intermediate data processing tool shows an acceptable accuracy and potential to process those outputs of \acrshort*{sfm}. By using the EasyIDP, a bridge between \acrshort*{sfm} software outputs and plant phenotyping could be built conveniently.
 
 \end{abstract}
 
@@ -183,9 +218,10 @@ This intermediate data processing tool shows an acceptable accuracy and potentia
 
 \begin{keyword}
 \kwd{Orthomosaic}
-\kwd{photogrammetry}
+\kwd{Photogrammetry}
 \kwd{Phenotyping}
 \kwd{Reverse calculation}
+\kwd{Python}
 \end{keyword}
 
 \end{abstractbox}
@@ -217,16 +253,16 @@ This intermediate data processing tool shows an acceptable accuracy and potentia
 % by analyzing it produced \acrfull*{pcd} or geographic products like \acrfull*{dom} and \acrfull*{dsm}
 
 \section*{Background}
-Compared with traditional manual field mensuration which is time-consuming, labor intensive, and subjectivity inevitable, the recent developed 3D reconstruction technique provides a high-throughput solution for plant phenotyping. The \acrfull*{sfm} technology, dependent only on common digital camera, has been widely used in both indoor and outdoor applications. For indoor application, the good quality \acrfull*{pcd} of individual crops are generated by SfM-MVS \cite{wang_maize_2019, rossi_performances_2020}, and several studies focus on developing algorithms to classify or segment point clouds to calculate geometry traits \cite{ziamtsov_machine_2019, artzet_phenomenal_2019}. While for outdoor experimental fields application, though PCD is also an important data source for crop modeling and traits extraction \cite{jay_field_2015, sun_three-dimensional_2020, zhu_quantification_2020}, the \acrfull*{dom} and \acrfull*{dsm} are often required for plot management and simplify the crop analyzing difficulties \cite{sun_field_2018, tresch_easympe_2019, chen_grid_2020}. Aligning the SfM outputs of different time also showed the ability for time-series analysis \cite{dong_4d_2017, han_clustering_2018}.
+Compared with traditional manual field mensuration which is time-consuming, labor intensive, and subjectivity inevitable, the recent developed 3D reconstruction technique provides a high-throughput solution for plant phenotyping. The \acrfull*{sfm} technology, dependent only on common digital camera, has been widely used in both indoor and outdoor applications. For indoor application, the good quality \acrfull*{pcd} of individual crops are generated by \acrshort*{sfm} \cite{wang_maize_2019, rossi_performances_2020}, and several studies focus on developing algorithms to classify or segment point clouds to calculate geometry traits \cite{ziamtsov_machine_2019, artzet_phenomenal_2019}. While for outdoor experimental fields application, though PCD is also an important data source for crop modeling and traits extraction \cite{jay_field_2015, sun_three-dimensional_2020, zhu_quantification_2020}, the \acrfull*{dom} and \acrfull*{dsm} are often required for plot management and simplify the crop analyzing difficulties \cite{sun_field_2018, tresch_easympe_2019, chen_grid_2020}. Aligning the SfM outputs of different time also showed the ability for time-series analysis \cite{dong_4d_2017, han_clustering_2018}.
 
 % The current challenges that using DOM PCD and DSM
-The mature commercial software like Pix4DMapper (Pix4D, Lausanne, Switzerland) or Agisoft Metashape (Agisoft LLC, St. Petersburg, Russia) significantly decrease the workload of obtaining those SfM-MVS outputs from raw images, however, applying those outputs into plant phenotyping directly is not so convenience. Firstly, the large file size of SfM outputs mixed with a large amount of unused background (soil, walk paths, etc.) in field, making data analyzing and plot tracking more complicated when gathering them with plants together. Hence, one common data processing is clipping those outputs according to plot sectors or \acrfull*{roi}, and making it easier for plot management and also benefit for time-series analysis. Secondly, the practical outdoor application has variate and complex light condition and leaf movement by wind, making it difficult to obtaining the same quality as raw images due to the "ghost effect" and effects the accuracy of image-based trait calculation, for 79\% of plots show overestimation of ground cover from DOM than that from raw images \cite{duan_comparison_2017}. Hence, finding correspond position from DOM or PCD to high quality raw images would contribute to the accuracy improvement.
+Commercial software like Pix4DMapper (Pix4D, Lausanne, Switzerland) or Agisoft Metashape (Agisoft LLC, St. Petersburg, Russia) significantly decreases the workload of obtaining those \acrshort*{sfm} outputs from raw images. However, applying those outputs into plant phenotyping directly is not convenient. Firstly, the large file size of \acrshort*{sfm} outputs mixed with a large amount of background (soil, grass, etc.) in the field, making data analyzing and plot extraction more complicated when gathering them with plants together. Hence, one typical data processing is clipping those outputs according to plot sectors or \acrfull*{roi}, and making it easier for plot management and also benefit for time-series analysis. Secondly, the practical field application has to face variate and complex environmental conditions such as light and wind,  making it challenging to obtain raw images quality for \acrshort*{sfm} outputs (eg. DOM). For example, \cite{duan_comparison_2017} reported that 79\% of plots show overestimation of ground cover from DOM than that from raw images. Hence, referring to raw images directly to compensate the quality loss of DOM or PCD, would improve the the performance of accuracy and time-cost.
 
-The objective of this study, is developing an easy-to-use software package to solve previous pain points in intermediate data processing from SfM outputs to plant phenotyping, including: 1) clipping SfM outputs to small parts or sectors by given plot boundary or ROI. 2) transforming the ROI on SfM-MVS outputs to correspond position on original quality raw images. 3) testing the accuracy and performance of previous transformation by a case study.
+The objective of this study is developing an easy-to-use software package to solve previous pain points in intermediate data processing from \acrshort*{sfm} outputs to plant phenotyping, including: 1) clipping \acrshort*{sfm} outputs to small parts or sectors by given plot boundary or ROI. 2) transforming the ROI on \acrshort*{sfm} outputs to correspond position on original quality raw images. 3) testing the accuracy and performance of previous transformation by a case study.
 
 \section*{Implementation}
 
-The open-source python package EasyIDP (\url{https://github.com/HowcanoeWang/EasyIDP}) was implemented to manipulating \acrshort*{sfm} software outputs. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl}. For achieve better package performance, the 8 GB RAM and 3.0 GHz CPU are recommended. The general workflow of this tool was shown in Figure \ref{fig:workflow} and has three main parts: a) 3D reconstruction outputs and b) making \acrshort*{roi} by other tools for data preparation; and c) EasyIDP functions, correspondence with 3D reconstruction workflow: (1) SfM stage, (2) MVS stage, and (3) \acrfull*{gis} stage respectively. 
+The proposed software package EasyIDP (\url{https://github.com/HowcanoeWang/EasyIDP}) was implemented under GPL-3.0 license to manipulating \acrshort*{sfm} software outputs. Though the source codes were cross-platform due to the characteristic of python language, they were programmed and tested under Windows 10 64-bit platform and Intel CPU with \acrfull*{mkl}. For achieve better package performance, the 8 GB RAM and 3.0 GHz CPU are recommended. The general workflow of this tool was shown in Figure \ref{fig:workflow} and has three main parts: a) 3D reconstruction outputs and b) making \acrshort*{roi} by other tools for data preparation; and c) EasyIDP functions, correspondence with 3D reconstruction workflow: (1) SfM stage, (2) MVS stage, and (3) \acrfull*{gis} stage respectively. 
 
 \subsection*{Input data preparation}
 
@@ -235,12 +271,12 @@ The open-source python package EasyIDP (\url{https://github.com/HowcanoeWang/Eas
 The quality of raw image is the fundamental of \acrshort*{sfm} process as well as the EasyIDP package. The images with balanced brightness, exposure, and minimum motion blur are of great importance. Over 50\% overlapping among each adjacent images is also recommended. Though \acrfull*{gcp} or \acrfull*{mtp}, or even \acrfull*{rtk} are optional for \acrshort*{sfm} software. It is strongly recommended to set several object or tags or scale bars to calibrate and define geographic positions. One option is Chilitags (\url{https://github.com/chili-epfl/chilitags}), the automatic workflow decrease a plenty of workloads in current \acrshort*{sfm} software.
 
 % SfM workflow
-After getting acceptable quality image data, the \acrshort*{sfm} workflow is required. In this study, the commercial Pix4DMapper was used as its default setting to produce required camera parameters (pmatrix, external and internal parameters), \acrshort*{pcd}, and GIS products \acrshort*{dom} and \acrshort*{dsm}, and all outputs of Pix4DMapper have been supported and tested. For the future, other commercial software like Agisoft Metashape or other open source software will be taken into consideration.
+After getting acceptable quality image data, the \acrshort*{sfm} workflow is required. In this study, the commercial Pix4DMapper was used as its default setting to produce required camera parameters (pmatrix, external and internal parameters), \acrshort*{pcd}, and GIS products \acrshort*{dom} and \acrshort*{dsm}. For the future, other commercial software like Agisoft Metashape or other open source software will be taken into consideration.
 
 \subsubsection*{Region of Interest (ROI) making}
 Currently, the EasyIDP package has no integrated \acrfull*{gui} for manual \acrshort*{roi} marking of all kinds of outputs. So different external software to marking ROI on different outputs are required.
 
-For the SfM stage, which requires obtaining 2D pixel coordinates on raw images, the  deep learning annotation software which produces json annotation files has been tested and supported, for example, LabelMe (\url{https://github.com/wkentaro/labelme}). Also, other photo processing software like GIMP or Photoshop which displays the pixel coordinate where mouse hover can be used. These mouse hovered 2D coordinate values can be copied or wrote to txt file or csv file for EasyIDP importing.
+For the SfM stage, which requires obtaining 2D pixel coordinates on raw images, the LabelMe (\url{https://github.com/wkentaro/labelme}), an image annotation software which produces json annotation files, has been tested and supported. Also, other photo processing software like GIMP or Photoshop which displays the pixel coordinate where cursor hover can be used. These 2D coordinate values where cursor is hovered can be copied or written to txt file or csv file for EasyIDP importing.
 
 For the MVS stage, which produces 3D \acrshort*{pcd}, the 3D coordinate is required. Common point cloud processing software which can pick point cloud points and get the 3D coordinate of each point could be used. The open-source CloudCompare (\url{http://cloudcompare.org/}) has been tested in this project and support export picked points coordinates to txt file for later usage. The tutorial for using CloudCompare to make ROI can be referred on our package documentation. For the future, importing the AutoCAD 3D polygon file (*.dxf) will be taken into consideration.
 
@@ -260,9 +296,9 @@ Several external python site-packages are used to input these files, all these d
 By importing all these materials into the EasyIDP package, a clip function is provided to clip both point cloud data and geotiff GIS maps into small sectors. There are two clipping modes included, grid clipper and ROI clipper. The grid clipper divides full DOM into same size grids (squares) while the ROI clipper clip the DOM directly based on given ROI polygon. The grid clipper first generate all the grid boundary polygons, and then view each of them as ROI to apply ROI clipper on them. When clipping point cloud, the \textit{open3d.geometry.PointCloud.crop} module is used directly. For clipping the GIS maps, a binary mask with outlier as false value is generated based on given ROI polygon, and the binary mask is used to clip pixels out of raw DOM. After that, the left corner offset of clipped boundary is calculated according to the DOM pixel resolution to obtaining the geo-header of clipped sector, and finally save to geotiff file by \textit{tifffile} package.
 
 \subsubsection*{Geometry from real world to image pixel}
-In the geometry between image and real world, there are three coordinates, the first one is the real world geographic coordinate ($xyz_{geo}$, unit is m), the second one is the offset camera coordinate ($xyz_{cam}$), which makes camera position to the origin (0,0,0) of coordinates and the camera medial axis is used as z axis, the last one is the raw image pixel coordinate ($xy_{pix}$, unit is pixel). 
+In the geometry between image and real world, there are three coordinate systems, the first one is the real world geographic coordinate ($xyz_{geo}$, unit is m), the second one is the offset camera coordinate ($xyz_{cam}$), which makes camera position to the origin (0,0,0) of coordinates and the camera medial axis is used as z axis, the last one is the raw image pixel coordinate ($xy_{pix}$, unit is pixel). 
 
-As shown in Figure \ref{fig:geom}.a, assume a point $K(X,Y,Z)$ in real world coordinate ($xyz_{geo}$) is recorded as $k_2$ in image $raw_2$ by camera. For internal parameters, $w$ and $l$ represents the camera sensor width (horizontal) and length (vertical) in mm, respectively, and $f$ is camera focal length in mm. For external camera parameters, the camera rotation and position are recorded by $r_i (\omega_i, \varphi_i, \kappa_i)$ \cite{pix4d_support_yaw_2020} and $P_i (Px_{i}, Py_{i}, Pz_{i})$. The rotation matrix ($\mathbf{R}_i$) of camera parameters 
+As shown in Figure \ref{fig:geom}.a, assume a point $K(X,Y,Z)$ in real world coordinate ($xyz_{geo}$) is recorded as $k_2$ in image $raw_2$ by camera. For internal parameters, $w$ and $l$ represent the camera sensor width (horizontal) and length (vertical) in mm, respectively, and $f$ is camera focal length in mm. For external camera parameters, the camera rotation and position are recorded by $r_i (\omega_i, \varphi_i, \kappa_i)$ \cite{pix4d_support_yaw_2020} and $P_i (Px_{i}, Py_{i}, Pz_{i})$. The rotation matrix ($\mathbf{R}_i$) of camera parameters 
 can be calculated by \cite{pix4d_support_how_2020}, or for Pix4D, can be loaded from \textit{calibrated\_camera\_parameters.txt} file:
 
 $$
@@ -341,10 +377,10 @@ And projecting $K'_2$ to image coordinate $k_2 (x_{k_2}, y_{k_2})$ in follows \c
   \right.
 \end{equation}
 
-where $c_x$ and $c_y$ is the image center in pixel (Figure \ref{fig:geom}.b), width (horizontal) and length (vertical), respectively. 
+\noindent where $c_x$ and $c_y$ is the image center in pixel (Figure \ref{fig:geom}.b), width (horizontal) and length (vertical), respectively. 
 
 \subsubsection*{Camera distortion correction}
-The image showed in the geometry figure is the ideal undistorted image (Figure \ref{fig:geom}.c). However, the lens of camera often cause distortion, and one extreme example for this distortion is fisheye camera. Therefore, the pixel coordinate position on image can't exactly reflect the real geometry relationship in the real world. Hence, the camera calibration is always required. The commercial software often have build-in camera calibration model, and Pix4D even support exporting calibrated undistorted images \cite{pix4d_support_menu_2020}. 
+The image showed in the geometry figure (Figure \ref{fig:geom}.c) is the ideal undistorted image. However, the lens of camera often causes distortion, and one extreme example for this distortion is fisheye or hemispherical camera. Therefore, the pixel coordinate position on image can't reflect the real geometry relationship in the real world. Hence, the camera calibration is always required. The commercial software often has build-in camera calibration models, and Pix4D even support exporting calibrated undistorted images \cite{pix4d_support_menu_2020}. 
 
 The transform from original distorted images pixel coordinate $(x_d, y_d)$ (known) to corrected undistorted pixel coordinate $(x_u, y_u)$ is described by \cite{pix4d_support_how_2020}. Firstly, back to Equation \ref{eq:xyz'}, and let $(\dfrac{X'_i}{Z'_i}, \dfrac{Y'_i}{Z'_i})$ as $(x_h, y_h)$ (unknown):
 
@@ -360,7 +396,7 @@ $$
 \end{cases}
 $$
 
-Then loading camera model (camera distortion coefficients) from SfM-MVS software outputs, for Pix4D, the radial distortion $(r_1, r_2, r_3)$ and tangential distortion $(t_1, t_2)$) are in (\textit{calibrated\_camera\_parameters.txt} file:
+Then loading camera model (camera distortion coefficients) from \acrshort*{sfm} software outputs, for Pix4D, the radial distortion $(r_1, r_2, r_3)$ and tangential distortion $(t_1, t_2)$ are in the \textit{calibrated\_camera\_parameters.txt} file:
 
 $$
   \left\{\begin{array}{lll}
@@ -383,7 +419,7 @@ $$
 $$
 
 \subsubsection*{Transform ROI from raw image to other raw images}
-The geometry of transforming \acrshort*{roi} on one image to another image is shown in Figure \ref{fig:geom}.a. Transforming a polygon can be simplified to repeatable polygon corner point transformation. Assuming a point $K$ (value unknown) in real world coordinate ($xyz_{geo}$) is recorded as $k_1$ and $k_2$ on image $raw_1$ and $raw_2$ by camera respectively, the $raw_1$ is where ROI is marked while the ($raw_2$) is the target image we want this ROI transformed to, the $k_1$ (value known) is one \acrshort*{roi} polygon corner. Due to the projecting 3D real world point to 2D pixel point ($K \xrightarrow{(1)} K'_1 \xrightarrow{(2)} k_1$) is a dimension reduction step with Z information loss, revert transform from given pixel coordinate $k_1 (x_{k_1}, y_{k_1})$ back to real world $K_r$ ($k_1 \xrightarrow{(2)^{-1}} K'_1 \xrightarrow{(1)^{-1}} k_r$) could only get the equation with $Z_1'$ as parametric:
+The geometry of transforming \acrshort*{roi} on one image to another image is shown in Figure \ref{fig:geom}.a. Transforming a polygon can be simplified to repeatable polygon corner points transformation. Assuming a point $K$ (value unknown) in real world coordinate ($xyz_{geo}$) is recorded as $k_1$ and $k_2$ on image $raw_1$ and $raw_2$ by camera respectively, the $raw_1$ is where ROI is marked while the ($raw_2$) is the target image we want this ROI transformed to, and the $k_1$ (value known) is one \acrshort*{roi} polygon corner. Due to the projecting 3D real world point to 2D pixel point ($K \xrightarrow{(1)} K'_1 \xrightarrow{(2)} k_1$) is a dimension reduction step with Z information loss, revert transform from given pixel coordinate $k_1 (x_{k_1}, y_{k_1})$ back to real world $K_r$ ($k_1 \xrightarrow{(2)^{-1}} K'_1 \xrightarrow{(1)^{-1}} k_r$) could only get the equation with $Z_1'$ as parametric:
 
 $$
   K_r = 
@@ -402,43 +438,39 @@ $$
   \end{bmatrix} + P_1
 $$
 
-It means without specifying the exact value of $Z_1'$, previous step will produce a line rather than a specific point in the real world as well as on the other raw image. The ideal and most accurate method is marking the same ROI on two images (get $k_1$ and $k_2$ known), and then calculate their intersection to get the exact $Z$ value of $K_r$, then follow $K_r \xrightarrow{(1)} K'_3 \xrightarrow{(2)} k_3$ to get the pixel coordinate on the third image. In this study, the height value of camera was used as $Z'_1$ directly, and reasonably, our case study pre-experiment result (Figure S1, Additional file 1) showed this assumption still needs some improvements to make the accuracy acceptable.
+It means without specifying the exact value of $Z_1'$, previous step will produce a line rather than a specific point in the real world as well as on the other raw image. The ideal and most accurate method is marking the same ROI on two images (get $k_1$ and $k_2$ known), and then calculate their intersection to get the exact $Z$ value of $K_r$, then follow $K_r \xrightarrow{(1)} K'_3 \xrightarrow{(2)} k_3$ to get the pixel coordinate on the third image. In this study, the height value of camera was used as $Z'_1$ directly, and reasonably, our case study pre-experiment result (Figure S3, Additional file 3) showed this assumption still needs some improvements to make the accuracy acceptable.
 
 \subsubsection*{Transform ROI from point cloud to raw images}
-For point cloud data, the Pix4D software will automatically produce \acrshort*{pcd} with XYZ value in geographic coordinates $(X_{real}, Y_{real}, Z_{real})$, the original XYZ often quite large, for this study which use UTM zone 54N projection is around (360,000, 4,000,000, altitude). To significantly decrease the file size of point cloud, it produces an \textit{offset.xyz} file which minus all points with this offset $(X_{offset}, Y_{offset}, Z_{offset})$. Hence, the ROI coordinate $(X_{roi}, Y_{roi}, Z_{roi})$ marked in Pix4D produced point cloud need to add this offset to be the real world coordinate $(X_{real}, Y_{real}, Z_{real})$, but it is software dependent.
 
-After getting 3D coordinate in real world, the 3D ($xyz_{geo}$) to 2D ($xy_{pix}$) calculation can be conducted by previous $K \xrightarrow{(1)} K'_i \xrightarrow{(2)} k_i$ pipeline, or if perspective lens cameras are used (not fisheye or spherical camera), the joint rotation-translation matrix (pmatrix) which calculated by Pix4D could be directly to achieve the same result \cite{pix4d_support_what_2020}:
+For point cloud data, the Pix4D software will produce \acrshort*{pcd} with XYZ value in geographic coordinates $(X_{real}, Y_{real}, Z_{real})$. Hence the ROI coordinate $(X_{roi}, Y_{roi}, Z_{roi})$ marked in Pix4D produced point cloud could be linked to the real world coordinate $(X_{real}, Y_{real}, Z_{real})$ directly ($XYZ_{real} = XYZ_{roi}$). But sometimes software produces offset point cloud with \textit{offset.xyz} file, and $XYZ_{real} = XYZ_{roi} - XYZ_{offset}$.
+
+After getting 3D coordinate in real world, the 3D ($xyz_{geo}$) to 2D ($xy_{pix}$) calculation can be conducted by previous $K \xrightarrow{(1)} K'_i \xrightarrow{(2)} k_i$ pipeline, or if perspective lens cameras are used (not fisheye or spherical camera), the joint rotation-translation matrix (pmatrix, 3 rows 4 columns) which calculated by Pix4D could be directly to achieve the same result \cite{pix4d_support_what_2020}:
 
 $$
 \begin{bmatrix}\begin{matrix} x \\ y \\ z\end{matrix}\end{bmatrix}
 = PMatrix_{3\times4} \cdot 
-\left(\begin{bmatrix}\begin{matrix} 
+\begin{bmatrix}\begin{matrix} 
   X_{real} \\ Y_{real} \\ Z_{real} \\ 1
 \end{matrix}\end{bmatrix} 
-- 
-\begin{bmatrix}\begin{matrix} 
-  X_{offset} \\ Y_{offset} \\ Z_{offset} \\ 1
-\end{matrix}\end{bmatrix}
-\right)
 $$
 
 \subsubsection*{Transform ROI from GIS map to raw images}
 The \acrshort*{roi} of GIS coordinates often stored as shapefile polygon (*.shp). However, sometimes the projection of shapefile are not the same with GIS products' (DOM and DSM) projection. The projection coordinate transform is provided by EasyIDP to solve this inconsistency. Meanwhile, the shapefile polygon only contains XY geographic information ($xy_{geo}$), a transformation from geographic coordinate to DSM's pixel coordinate is required to get the height (Z) value of ROI on related DSM pixel ($z_{geo}$). After getting the full geographic coordinates ($xyz_{geo}$), the same procedure as previous 3D to 2D section could be operated.
 
-\subsection*{Case Study: Lotus Ponds}
+\subsection*{Case Study: Lotus field}
 
 \subsubsection*{Field data and image collection}
-To obtain the materials for package developing and testing, a lotus (\textit{Nelumbo nucifera}) experimental plot in Nishi-Tokyo, Tokyo, Japan was used as a case study (Figure \ref{fig:map}.a). The total 112 different varieties of lotus were sown in squire cultivation ponds (Figure \ref{fig:map}.b). The ordinary local management practices were used to manage all trails.
+To obtain the materials for package developing and testing, a lotus (\textit{Nelumbo nucifera}) experimental plot in Nishi-Tokyo, Tokyo, Japan was used as a case study (Figure \ref{fig:map}.a). The total 112 different varieties of lotus were sown in squire cultivation plots (Figure \ref{fig:map}.b). The ordinary local management practices were used to manage all trails.
 
-The DJI drone (DJI Inspire 1, DJI, China) with onboard camera (Zenmuse X5 Pro, DJI, China) was used to acquire images, the flight height was 30 m. The flight plan was designed in double-grid style by LitchAPP (Litch, VC Technology Ltd. UK) software, with >90\% overlap of pictures to the front and sides. The Pix4Dmapper Pro (Pix4D, Lausanne, Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used as default, and the \acrshort*{gcp} were measured by Hemisphere RTK differential GNSS devices (Hemisphere GNSS)(Figure \ref{fig:map}.c). The device for 3D reconstruction processing includes Intel Xeon E5-2690 v4 @2.60GHz CPU; 128 GB RAM; two NVIDIA GeForce GTX1080Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}.
+The DJI Inspire 1 drone (DJI, China) with onboard camera Zenmuse X5 Pro (DJI, China) was used to acquire images, the flight height was 30 m. The flight plan was designed in double-grid style by LitchAPP (VC Technology Ltd. UK) software, with >90\% overlap of pictures to the front and sides. The Pix4Dmapper Pro (Pix4D S.A., Switzerland) was used to obtain the \acrshort*{sfm} products. The parameters for all \acrshort*{sfm} steps in the software were used as default, and the \acrshort*{gcp} were measured by Hemisphere RTK differential GNSS devices (Hemisphere GNSS)(Figure \ref{fig:map}.c). The device for 3D reconstruction processing includes Intel Xeon E5-2690 v4 @2.60GHz CPU; 128 GB RAM; two NVIDIA GeForce GTX1080Ti (Driver: 26.21.14.3186) GPUs; and Windows 10 Pro, 64-bit operating system. The details of digital data collected and produced were shown in Table \ref{tab:diginfo}.
 
-After processing all flight time and getting DOM and DSM, the QGIS was used to marking and exporting plot boundary polygons and their id on the map (Figure \ref{fig:map}.b).
+After processing all flights and getting DOM and DSM, the QGIS was used to marking and exporting plot boundary polygons and their id on the map (Figure \ref{fig:map}.b).
 
 \subsubsection*{Z value determination}
-In this case study, after clipping out the \acrshort*{roi} of each pond, two z values are calculated. The first one is the 5 percentile mean z value ($mean(Z_{p5})$), equals to the mean z values of all the points smaller that the threshold of 5 percentiles, used for catching the elevation (height) of water surface to define the z value of ROI. The other one is the 95 percentile mean z value ($mean(Z_{p95})$), equals to the mean of all point z values which bigger than the threshold of 95 percentiles, used for catching the top of lotus leaves. Also, a ground region was selected manually (The middle corridor in Figure \ref{fig:map}.b where scale bar placed), the mean Z value of this region ($mean(Z)_{ground}$) was used as the ground elevation. The lotus height equals to $mean(Z_{p95}) - mean(Z)_{ground}$.
+In this case study, after clipping out the \acrshort*{roi} of each plot, two z values are calculated. The first one is the 5 percentile mean z value, $mean(Z_{p5})$, equals to the mean z values of all the points smaller that the threshold of 5 percentiles, used for catching the elevation (height) of water surface to define the z value of ROI. The other one is the 95 percentile mean z value,  $mean(Z_{p95})$, equals to the mean of all point z values which bigger than the threshold of 95 percentiles, used for catching the top of lotus leaves. Also, a ground region was selected manually (The middle corridor in Figure \ref{fig:map}.b where scale bar placed), the mean Z value of this region, $mean(Z)_{ground}$, was used as the ground elevation. The lotus height equals to $mean(Z_{p95}) - mean(Z)_{ground}$.
 
 \subsubsection*{Performance evaluation}
-To determine how the transformation performs and what contributes to the deviation, the expected transformation results were made by LabelMe annotation software manually and used to compare with that reverse calculated by EasyIDP package. Three indicators, \acrfull*{iou} performance criterion \cite{everingham_pascal_2010}, precision, and recall, were used to evaluate the similarity between package output and manual marking, and can be calculated by (refer Tresch et al., \cite{tresch_easympe_2019} Figure 3 for IoU diagram of each area): 
+To determine how the transformation performs and what contributes to the deviation, the expected transformation results were made by LabelMe annotation software manually and used to compare with that calculated by EasyIDP package. Three indicators, \acrfull*{iou} performance criterion \cite{everingham_pascal_2010}, precision, and recall, were used to evaluate the similarity between package output and manual marking, and can be calculated by (refer Tresch et al., \cite{tresch_easympe_2019} Figure 3 for IoU diagram of each area): 
 
 $$
 \begin{array}{lcl}
@@ -448,21 +480,21 @@ $$
 \end{array}
 $$
 
-Two kinds of comparison were involved. For the first one, three ponds with different lotus density (N3E6: sparsest, S2W4: medium sparse, N2W5: densest) were selected, and all related raw images were marked manually. The pixel Euclidean distance from IoU center to image center $(c_x, c_y)$ was also calculated, the relationship between indicator values and Euclidean distance was simply discussed. Secondly, for each pond, the smallest IoU Euclidean distance raw image were selected to mark manual reference, and overall trend of indicators were simply analyzed.
+Two kinds of comparison were involved. For the first one, three plots with different lotus density (N3E6: sparsest, S2W4: medium sparse, N2W5: densest) were selected, and all related raw images were marked manually. The pixel Euclidean distance from IoU center to image center $(c_x, c_y)$ was also calculated, the relationship between indicator values and Euclidean distance was simply discussed. Secondly, for each plot, the smallest IoU Euclidean distance raw image were selected to mark manual reference, and overall trend of indicators were simply analyzed.
 
 \section*{Results and Discussion}
-As mentioned in introduction part, the intermediate data processing contains two main tasks: 1) clipping large outputs to small sectors according to variate file types of grids or ROI (Application 1). 2) transforming the ROI of each output to correspond position on high quality raw images (Application 2), the accuracy evaluation is also included. Finally, some potential applications of this tool for deep learning annotation and training data augmentation are discussed.
+As mentioned in introduction part, the intermediate data processing contains two main tasks: 1) clipping large outputs to small sectors according to variate file types of grids or ROI (Application 1). 2) transforming the ROI of each output to correspond position on high quality raw images (Application 2), the accuracy evaluation is also included. Finally, some potential applications of this tool for data annotation and augmentation in deep learning are discussed.
 
 \subsection*{Application 1: Clipping SfM outputs}
 For grid clipper, a demo result is shown in Figure \ref{fig:dom2girds}.a under the Windows 10 file management system. And those sector images still contain geographic information which can be overlaid over original DOM image directly (Figure \ref{fig:dom2girds}.b). Also, the grid clipper supports clip the GIS shapefile polygon (*.shp) over each grid (Figure \ref{fig:dom2girds}.c), and for the view of each grid, all the annotations belong to current grid could be summarized together (Figure \ref{fig:dom2girds}.d).
 
 % show DOM and PCD clipped results
-For ROI clipper, figure \ref{fig:roi2dxm}.a-b shows the example of DOM clipping along given ROI while Figure \ref{fig:roi2dxm}.c-d shows the example of the \acrshort*{pcd} clipping. Though in this study, the output files did not take over too much space (Table \ref{tab:diginfo}) by limiting the SfM-MVS processing quality. The seldom used background for plant phenotyping analysis still takes over at least 60\% of area (Figure \ref{fig:map}.b). By clipping the \acrshort*{roi} to individual geotiff files with plot names, a plenty of space could be saved, and also helps the plot-based time-series management and data analysis. 
+For ROI clipper, figure \ref{fig:roi2dxm}.a-b shows the example of DOM clipping along given ROI while Figure \ref{fig:roi2dxm}.c-d shows the example of the \acrshort*{pcd} clipping. Though in this study, the output files did not take over too much storage space (Table \ref{tab:diginfo}) by limiting the \acrshort*{sfm} processing quality. The seldom used background for plant phenotyping analysis still takes over at least 60\% of area (Figure \ref{fig:map}.b). By clipping the \acrshort*{roi} to individual geotiff files with plot names, a plenty of storage space could be saved, and also helps the plot-based time-series management and data analysis. 
 
 % time-series
-The time-series analysis could be conducted after collecting continues data and clipping into sectors by ROI. A simple example (plot S2E1) for time-series height tracking is shown in Figure \ref{fig:time}. By adding \acrfull*{rtk} \acrshort*{gcp} in the corner of plot (Figure \ref{fig:map}.c), the image XY plane had been calibrated to the same position through timeline, reflected by the cultivation pond edges being linked together without significant deviation (Figure \ref{fig:time} first row). 
+The time-series analysis could be conducted after collecting continues data and clipping into sectors by ROI. A simple example (plot S2E1) for time-series height tracking is shown in Figure \ref{fig:time}. By adding \acrshort*{rtk} and \acrshort*{gcp} in the corner of plot (Figure \ref{fig:map}.c), the image XY plane had been calibrated to the same position through timeline, reflected by the cultivation plot edges being linked together without significant deviation (Figure \ref{fig:time} first row). 
 
-When it comes to Z axis, though the height of lotus showed a general trend of increasing, the time 20170531, 20170612, and 20170718 showed the abnormal trend whose heights were significantly greater than later days. This should be effected by the quality of \acrshort*{sfm} processing. By visual checking, in these days, the 3D reconstructed ground had slightly leaned from west to east, making the $mean(Z)_{ground}$ wasn't the actual ground height near that pond and caused this abnormal height. What's more, the z value (elevation) of each time did not be calibrated the same as XY plane, hence the $mean(Z)_{ground}$ variate differently along the timeline, the deviation could reach 0.3 m which is unacceptable compared with crop height. In the future, the \acrshort*{gcp} for z axis should also be taken into consideration, for example, a visible box or pole could be set in the field. How to evaluating the quality of 3D reconstruction and the adjustment for the 3D reconstruction workflow to fit the characteristic of agricultural should also be considered.
+When it comes to Z axis, though the height of lotus showed a general trend of increasing, the time 20170531, 20170612, and 20170718 showed the abnormal trend whose heights were significantly greater than later days. This should be effected by the quality of \acrshort*{sfm} processing. By visual checking, in these days, the 3D reconstructed ground had slightly leaned from west to east, making the $mean(Z)_{ground}$ wasn't the actual ground height near that plot and caused this abnormal height. What's more, the z value (elevation) of each time did not be calibrated the same as XY plane, hence the $mean(Z)_{ground}$ variate differently along the timeline, the deviation could reach 0.3 m which is unacceptable compared with crop height. In the future, the \acrshort*{gcp} for z axis should also be taken into consideration, for example, a visible box or pole could be set in the field. How to evaluating the quality of 3D reconstruction and the adjustment for the 3D reconstruction workflow to fit the characteristic of agricultural should also be considered.
 
 \subsection*{Application 2: Transformation outputs ROI to raw images}
 % why reverse calculation: the resolution problem
@@ -470,17 +502,17 @@ When it comes to Z axis, though the height of lotus showed a general trend of in
 Though the \acrshort*{sfm} software provide options for the quality (density) of MVS stage, the highest quality could provide an ultra-high resolution of outputs. However, this processing is unacceptable computation intensive and time-consuming for high-throughput agriculture, meanwhile, a study showed the ground coverage estimated from DOM is greater than that from raw images took over 79\% of plots due to the ghosting effects caused by wind and cloud \cite{duan_comparison_2017}. For 2D image-based trait analysis, e.g. ground coverage, leaf projection area, or object detection, marking \acrshort*{roi} on fast produced low quality DOM and linking them back to raw images could save a plenty of time without losing the accuracy, this technique named ROI transformation in this study, or called reverse calculation in previous studies \cite{tresch_easympe_2019, duan_comparison_2017}. The demo of ROI transformation from DOM and PCD on some raw images is shown in Figure \ref{fig:roi2dxm}.e.
 
 % how it performs (IoU accuracy analysis)
-The results of performance evaluation is shown in Figure \ref{fig:dist}. For pond N2W5 and S2W4, most the \acrshort*{iou} values are over 90\%, surprisingly, for the simplest and sparse pond N3E6, although the \acrshort{iou} values are greater than 75\%, the performance is moderate. The reason is that the automatic z value calculation of \acrshort*{roi} (elevation, $mean(Z_{p5})$). For manually marking, the reference is the edge of pond, which means the manual \acrshort*{roi} elevation is the pond edge (the blue broken line in the second row of Figure \ref{fig:dist}), while the elevation auto-selected is the red solid line in Figure \ref{fig:dist}. The plot N3E6 had almost 25 cm differences between two elevations, mainly caused by the transparent water, the 3D reconstruction build the bed mud rather than water surface for this pond. This shows the \acrshort*{roi} height selection is of great importance for the transform accuracy. Another trend in this figure is the \acrshort*{iou} decreasing with the distance from \acrshort*{roi} center to photo center increasing. It means the position of \acrshort*{roi} on raw images (the view angle where taking raw photo) also reflect the transform accuracy. 
+The results of performance evaluation is shown in Figure \ref{fig:dist}. For plot N2W5 and S2W4, most the \acrshort*{iou} values are over 90\%, surprisingly, for the simplest and sparse plot N3E6, although the \acrshort{iou} values are greater than 75\%, the performance is moderate. The reason is that the automatic z value calculation of \acrshort*{roi} (elevation, $mean(Z_{p5})$). For manually marking, the reference is the edge of plot, which means the manual \acrshort*{roi} elevation is the plot edge (the blue broken line in the second row of Figure \ref{fig:dist}), while the elevation auto-selected is the red solid line in Figure \ref{fig:dist}. The plot N3E6 had almost 25 cm differences between two elevations, mainly caused by the transparent water, the 3D reconstruction build the bed mud rather than water surface for this plot. This shows the \acrshort*{roi} height selection is of great importance for the transform accuracy. Another trend in this figure is the \acrshort*{iou} decreasing with the distance from \acrshort*{roi} center to photo center increasing. It means the position of \acrshort*{roi} on raw images (the view angle where taking raw photo) also reflect the transform accuracy. 
 
-Figure \ref{fig:ht_diff} shows how the \acrshort*{roi} elevation selection and \acrshort*{roi} position on raw images effects transformation accuracy. Three different heights (bottom $mean(Z_{p5})$, middle $mean(Z)$, and top $mean(Z_{p95})$) were selected as \acrshort*{roi} elevation respectively (Figure \ref{fig:ht_diff}.a), the deviation variate on different raw images. The closer to the raw image center, the fewer effects of height selection, which is highly related to the view angle. And previous Figure \ref{fig:dist} also shows, once the pixel distance to image center smaller than 800 pixels (size of image is 4608$\times$3456 pixels), the moderate performance pond N3E6 could achieve IoU greater than 90\%. Hence, to minimize the effects of unsuitable \acrshort*{roi} elevation selection, it is recommended to choose raw images where the \acrshort*{roi} locates in the center as first priority. Based on this finding, for all 112 ponds, the minimum distance raw image of each pond were selected and the expected \acrshort*{roi} results were marked manually, the distribution of accuracy indicators is shown in Figure \ref{fig:iou_all}, the peaks are around 98\% while the minimum value still greater than 90\%. Considering the difficulties in manual marking in some pond where all corners are covered in leaves and nonidentical (See Additional file 1, Figure S1), the \acrshort*{roi} transformation accuracy has been validated acceptable.
+Figure \ref{fig:ht_diff} shows how the \acrshort*{roi} elevation selection and \acrshort*{roi} position on raw images effects transformation accuracy. Three different heights (bottom $mean(Z_{p5})$, middle $mean(Z)$, and top $mean(Z_{p95})$) were selected as \acrshort*{roi} elevation respectively (Figure \ref{fig:ht_diff}.a), the deviation variate on different raw images. The closer to the raw image center, the fewer effects of height selection, which is highly related to the view angle. And previous Figure \ref{fig:dist} also shows, once the pixel distance to image center smaller than 800 pixels (size of image is 4608$\times$3456 pixels), the moderate performance plot N3E6 could achieve IoU greater than 90\%. Hence, to minimize the effects of unsuitable \acrshort*{roi} elevation selection, it is recommended to choose raw images where the \acrshort*{roi} locates in the center as first priority. Based on this finding, for all 112 plots, the minimum distance raw image of each plot were selected and the expected \acrshort*{roi} results were marked manually, the distribution of accuracy indicators is shown in Figure \ref{fig:iou_all}, the peaks are around 98\% while the minimum value still greater than 90\%. Considering the difficulties in manual marking in some plot where all corners are covered in leaves and nonidentical (See Additional file 1, Figure S1), the \acrshort*{roi} transformation accuracy has been validated acceptable.
 
 % distortion correction for those still not good after choosing 
-The EasyIDP package also provide a computer vision based distortion correction method (Additional file 2, Figure S2), the condition to using this algorithm strictly limited to the flat region. In the lotus case study, it worked as expected only on pond with sparse and flat leaves lay on water surface. For those lotus leaves stretched out of water surface more than 20 cm, the matching results didn't follow the pond edge anymore, instead it follows the movement of top leaf pattern in different angle of view, but also have the high possibility of mismatching.
+The EasyIDP package also provide a computer vision based distortion correction method (Additional file 2, Figure S2), the condition to using this algorithm strictly limited to the flat region. In the lotus case study, it worked as expected only on plot with sparse and flat leaves lay on water surface. For those lotus leaves stretched out of water surface more than 20 cm, the matching results didn't follow the plot edge anymore, instead it follows the movement of top leaf pattern in different angle of view, but also have the high possibility of mismatching.
 
 \subsection*{Potential application for deep learning}
 %\subsection*{Use case 1: deep learning training data preparation}
 % the DOM is too large to use for DL directly
-Applying photogrammetry deep learning framework for object classification or segmentation is now a popular research area in agriculture \cite{zhou_fast_2020, feng_evaluation_2020, desai_automatic_2019}, however, limited by the huge memory consumption during convolution, the input images size is often limited to small size (< 1,000$\times$1,000), while the original DOM size is hundreds of times larger (> 10,000$\times$10,000). Though common GIS software (e.g. ArcGIS or QGIS) provide toolboxes for clipping a whole DOM to small grids (parts), and may also provide programmable API for script or batch processing, to our practical experiences, the processing steps as well as the API learning cost build a wall beyond widely spread use. In this EasyIDP package, a grid clipper is provided to solve this requirement within a few line codes (Figure \ref{fig:dom2girds}.a-b).
+Applying deep learning framework on common digital images for object classification or segmentation is now a popular research area in agriculture \cite{zhou_fast_2020, feng_evaluation_2020, desai_automatic_2019}, however, limited by the huge memory consumption during convolution, the input images size is often limited to small size (< 1,000$\times$1,000), while the original DOM size is hundreds of times larger (> 10,000$\times$10,000). Though common GIS software (e.g. ArcGIS or QGIS) provide toolboxes for clipping a whole DOM to small grids (parts), and may also provide programmable API for script or batch processing, to our practical experiences, the processing steps as well as the API learning cost build a wall beyond widely spread use. In this EasyIDP package, a grid clipper is provided to solve this requirement within a few line codes (Figure \ref{fig:dom2girds}.a-b).
 
 % the annotation on DOM is not convenient
 How to transform GIS used format (*.shp) to deep learning required annotation format (*.json) after clipping is another challenge. Previous clipping method provides a solution that making large DOM as common small size digital camera image, and the small objects within each grid could be marked directly on the produced grid sectors. For those objects whose size greater than grids, e.g. the plot boundary, the grid clipper also proved a convenient way to break down (intersect) and integrate them with grid boundary (Figure \ref{fig:dom2girds}.c-d). All the annotations beyond this grid could be automatically transferred to LabelMe supported json file, and could be imported to deep learning framework directly.
@@ -494,10 +526,10 @@ Firstly, applying deep learning framework on unstructured \acrshort*{pcd} is sig
 Secondly, most deep learning framework require at least thousands of training images to avoid overfitting and ensure the versatility of model, while annotating such number of training data is labor intensive. The data augmentation was proposed to decrease the workload of annotation by linear transformation such as rotating, zooming or flipping on annotated images, and applied in some agriculture deep learning studies \cite{zhou_fast_2020, han_real-time_2020}. However, this image processing based data augmentation cannot exceed the photo collected from different view angles in real world. Hence, Beck et al.,\cite{beck_embedded_2020} proposed an automatic indoor robotic annotation system to collect natural augmented crop training data in agriculture. However, to the best of our knowledge, there is no annotation data collecting system for open field. The raw images collected for 3D reconstruction naturally contains abundant view angle (rotation in 3D), height (scale zoom), and environment condition (light, cloud shadow, wind shake, soil color of different wetness), which is a good material for data augmentation, but the difficulties to identify each plant and link with annotation makes this great potential being ignored, which can be easily solved by the ROI transformation function in EasyIDP package. As shown in Figure \ref{fig:dl}, the original DOM was clipped by 500px$\times$500px grids, and the grid "x6-y7" which contains several lotus flowers was chosen to making flower annotations by LabelMe software. Then, the annotation json file was loaded in EasyIDP and the reverse calculation was applied to transform these annotations on raw images automatically. As discussed before, the annotation closer to image centers, fewer deviation would obtain. The last two columns shows the furthest distance cases which have the worst performance. And the distance fewer than 1000px is acceptable for automatic annotation marking.
 
 \subsection*{Future prospects}
-The EasyIDP package currently is just a pre-release and still under construction, and there are many prospects could be added and modified: 1) All the functions mentioned before were only developed and tested under the outputs of Pix4Dmapper, another famous commercial software Agisoft Metashape hasn't been adapted yet as well as other open-source software. 2) Though mentioned in Implementation part, the SfM stage also provide the possibility to convert ROI on one raw image to another raw image, a pre-experiment (Additional file 3, Figure S3) showed that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$ involves great deviation and unacceptable low accuracy, which need to be improved in the future by reverting PMatrix or distortion correction. 3) though adding Z axis control points helps for the height calibration, integrating terrestrial camera as well as aerial drone also improves the height accuracy. How to mix two different camera type and route to do 3D reconstruction and fitting EasyIDP under this circumstance still need to be studies. 4) Compared with perspective lens camera which has limited sight angle, the hemispherical (fisheye) and spherical camera could record full surrounding information with one shot, which would greatly improve image data collection efficiency. How to using those severely distorted camera for 3D reconstruction and apply full EasyIDP functions on them should be taken into consideration.
+The EasyIDP package currently is just a pre-release and still under construction, and there are many prospects could be added and modified: 1) All the functions mentioned before were only developed and tested under the outputs of Pix4Dmapper, another famous commercial software Agisoft Metashape hasn't been adapted yet as well as other open-source software. 2) Though mentioned in Implementation part, the SfM stage also provide the possibility to convert ROI on one raw image to another raw image, a pre-experiment (Additional file 3, Figure S3) showed that using the geographic height of image (z value of $p_1$) as unknown $Z_1'$ involves great deviation and unacceptable low accuracy, which need to be improved in the future by reverting PMatrix or distortion correction. 3) though adding Z axis control points helps for the height calibration, integrating terrestrial camera as well as aerial drone also improves the height accuracy. How to mix two different camera types and routes to do 3D reconstruction and fitting EasyIDP under this circumstance still need to be studies. 4) Compared with perspective lens camera which has limited sight angle, the hemispherical (fisheye) and spherical camera could record full surrounding information with one shot, which would greatly improve image data collection efficiency. How to using those severely distorted camera for 3D reconstruction and apply full EasyIDP functions on them should be taken into consideration.
 
 \section*{Conclusions}
-The commercial or open-source software significantly decrease the workload of 3D reconstruction by \acrshort*{sfm} from raw images for 3D based high-throughput phenotyping. However, there are still some intermediate data processing steps required to apply those SfM-MVS products. And to our knowledge, there isn't any easy-to-used tool for this task. In this study, a python package called EasyIDP is proposed to build a bridge from SfM outputs to plant phenotyping and provide services of: 1) clipping large size of SfM-MVS outputs to acceptable file type and size following the plot boundary or given ROI, 2) linking ROI on those outputs to correspond position on original resolution raw images. The accuracy of previous transformation has been validated with manually marked references, and the impact factors for the accuracy have been discussed. By using this tool, not only the quality of image-based trait analysis such as ground cover or leaf area could be improved, but also shows great potential of automatic augment deep learning training data. In the future, several extension studies include adapting more SfM-MVS software, improving deviation corrections, and integrating mixed type of camera as well as spherical lens cameras should be developed.
+The commercial or open-source software significantly decrease the workload of 3D reconstruction by \acrshort*{sfm} from raw images for 3D based high-throughput phenotyping. However, there are still some intermediate data processing steps required to apply those \acrshort*{sfm} products. And to our knowledge, there isn't any easy-to-used tool for this task. In this study, a python package called EasyIDP is proposed to build a bridge from \acrshort*{sfm} outputs to plant phenotyping and provide services of: 1) clipping large size of \acrshort*{sfm} outputs to acceptable file type and size following the plot boundary or given ROI, 2) linking ROI on those outputs to correspond position on original resolution raw images. The accuracy of previous transformation has been validated with manually marked references, and the impact factors for the accuracy have been discussed. By using this tool, not only the quality of image-based trait analysis such as ground cover or leaf area could be improved, but also shows great potential of automatic augment deep learning training data. In the future, several extension studies include adapting more \acrshort*{sfm} software, improving deviation corrections, and integrating mixed type of camera as well as spherical lens cameras should be developed.
 
 %\paragraph*{Sub-sub-sub heading for section}
 %Text for this sub-sub-sub-heading.
@@ -515,14 +547,13 @@ The commercial or open-source software significantly decrease the workload of 3D
 \printglossary[type=\acronymtype, title=Abbreviations, nonumberlist]
 
 \section*{Acknowledgments}
-We would thank aaa from ? Institude for lotus pond management, and bbb from ??? for field image data collection? We thank Yulin Duan and Yun Shi from the Chinese Academic of Agriculture for coming out the idea of DOM clipping and annotation transformation.
+We would thank technique stuff of Institute for Sustainable Agro-ecosystem Services (ISAS) for lotus field management.
 
 \section*{Authors' contributions}
-HW and WG conceived the ideas and designed methodology; WG collected UAV images, HW analyzed the data with the input of WG; All authors discussed, wrote the manuscript, and gave final approval for publication.
-
+HW and WG conceived the ideas and designed methodology; WG collected UAV images and obtained the outputs of \acrshort*{sfm}, HW programmed the package and analyzed the data; YD and YS contributed to the part of DOM clipping and annotation transformation. YK and SN supervised this study. All authors discussed, wrote the manuscript, and gave final approval for publication.
 
 \section*{Funding}
-This study was partially funded by the JST CREST Program JPMJCR16O2, JPMJCR1601, JPMJCR1603, JPMJCR1512, SICORP Program JPMJSC16H2 and aXis program JPMJAS2018.
+This study was partially funded by the JST CREST Program JPMJCR16O2, JPMJCR1601, JPMJCR1603, JPMJCR1512, SICORP Program JPMJSC16H2, aXis program JPMJAS2018 and National Natural Science Foundation of China U19A2061.
 
 \section*{Ethics approval and consent to participate}
 Not applicable.
@@ -578,7 +609,7 @@ The authors declare that they have no competing interests.
 
 \subsection*{Additional file 1: Figure S1}
 % difficult_ground
-The difficult examples for manually marking of expected transformation results. The pond corner or edge are partly or mostly covered by lotus leaves and unable to identify.
+The difficult examples for manually marking of expected transformation results. The plot corner or edge are partly or mostly covered by lotus leaves and unable to identify.
 
 \subsection*{Additional file 2: Figure S2}
 % template match
@@ -643,13 +674,13 @@ The pre-experiment results of transforming \acrshort*{roi} on raw image to other
 
 \begin{figure}[!htb]
   \includegraphics[width=0.95\linewidth]{figures/workflow.pdf}
-  \caption{The workflow of proposed method. After obtaining image data, the 3D reconstruction (SfM-MVS) software is used to generate outputs of each processing step. Then the \acrfull*{roi} is marked via external commercial or open source tools. Finally, the EasyIDP package is used to deal with and connect between different SfM-MVS outputs and ROI, including reverse calculating the projected position of ROI and clipping the output by ROI ranges.}
+  \caption{The workflow of proposed method. After obtaining image data, the 3D reconstruction (\acrshort*{sfm}) software is used to generate outputs of each processing step. Then the \acrfull*{roi} is marked via external commercial or open source tools. Finally, the EasyIDP package is used to deal with and connect between different \acrshort*{sfm} outputs and ROI, including reverse calculating the projected position of ROI and clipping the output by ROI ranges.}
   \label{fig:workflow}
 \end{figure}
 
 \begin{figure}[!htb]
   \includegraphics[width=0.95\linewidth]{figures/map.pdf}
-  \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation ponds, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of ponds were made by QGIS software and saved to shapefile (*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
+  \caption{The experimental lotus plot condition. (\textbf{a}) the experimental plot locates in Nishi-Tokyo, Tokyo, Japan; (\textbf{b}) The labels of cultivation plots, the orthomosaic showed here was collected on the May 5, 2017. The labels and boundaries of plots were made by QGIS software and saved to shapefile (*.shp) for later usage; (\textbf{c}) shows the device used for obtaining geographic position and functioning as ground control point to linking different flight time series together}
   \label{fig:map}
 \end{figure}
 
@@ -679,7 +710,7 @@ The pre-experiment results of transforming \acrshort*{roi} on raw image to other
 
 \begin{figure}[!htb]
   \includegraphics[width=0.95\linewidth]{figures/dist.pdf}
-  \caption{The transformation accuracy examine results by fully manual marked plots. Three plots with different lotus leaf density and height were selected. All the expected ROI transformation positions were marked manually on related raw images by LabelMe annotation software. The distance is the Euclidean pixel distance from \acrfull*{iou} center to photo center. The distribution of each pixel point height is shown in blue area, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, and the height of pond edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM.}
+  \caption{The transformation accuracy examine results by fully manual marked plots. Three plots with different lotus leaf density and height were selected. All the expected ROI transformation positions were marked manually on related raw images by LabelMe annotation software. The distance is the Euclidean pixel distance from \acrfull*{iou} center to photo center. The distribution of each pixel point height is shown in blue area, the height of ROI (red solid lines) was the mean value of all pixel points smaller than 5 percentile threshold, and the height of plot edge (blue broken lines) was the mean value of random 10 points picked in QGIS on DSM.}
   \label{fig:dist}
 \end{figure}
 
@@ -697,7 +728,7 @@ The pre-experiment results of transforming \acrshort*{roi} on raw image to other
 
 \begin{figure}[!htb]
   \includegraphics[width=0.95\linewidth]{figures/dl.pdf}
-  \caption{Potential use for deep learning training data augmentation. Firstly, the DOM was clipped to 500px$\times$500px grids, the grid "x6-y7" was marked 6 annotation rectangles for lotus flowers by LabelMe. The annotation json file was imported to EasyIDP and did reverse calculation to all raw images. The "div" means the distance from annotation center to image center, smaller means closer to image center}
+  \caption{Potential use for data annotation and augmentation in deep learning. Firstly, the DOM was clipped to 500px$\times$500px grids, the grid "x6-y7" was marked 6 annotation rectangles for lotus flowers by LabelMe. The annotation json file was imported to EasyIDP and did reverse calculation to all raw images. The "div" means the distance from annotation center to image center, smaller means closer to image center}
   \label{fig:dl}
 \end{figure}
 
